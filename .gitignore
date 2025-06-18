@@ -1,0 +1,44 @@
+# —— uVision 项目（用户偏好设置，不同机器/用户各异）
+*.uvopt
+*.uvoptx
+*.uvgui*
+
+# —— 编译/链接产物 ——
+# Intel HEX、BIN 镜像
+*.hex
+*.bin
+
+# 列表、映射文件
+*.lst
+*.map
+
+# 可重定位模块 / 目标文件
+*.obj
+*.o
+*.rel
+
+# 链接脚本、散布文件
+*.lk?
+*.lnk
+*.sct
+
+# 错误、警告、日志输出
+*.err
+*.wrn
+*.log
+
+# —— 中间目录 ——
+/Objects/
+/Build/
+/Listings
+/Output/
+
+# —— 编辑器 & 系统 ——
+# 备份、临时文件
+*~
+*.bak
+*.tmp
+
+# Windows 缓存、macOS 缓存
+Thumbs.db
+.DS_Store
