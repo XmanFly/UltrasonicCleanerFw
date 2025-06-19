@@ -13,7 +13,8 @@ SOURCES += \
     services/soft_timer.c \
     services/anim.c \
     logic/fsm.c \
-    sim/main_sim.cpp
+    sim/main_sim.cpp \
+    sim/simviewmodel.cpp
 
 HEADERS += \
     common/platform.h \
@@ -23,12 +24,14 @@ HEADERS += \
     hal/time.h \
     hal/touch.h \
     hal/ultrasonic.h \
+    include/stdbool.h \
     logic/fsm.h \
     services/anim.h \
-    services/soft_timer.h
+    services/soft_timer.h \
+    sim/simviewmodel.h
 
 
-RESOURCES += qt/qml.qrc
+RESOURCES += qt/qml/qml.qrc
 
 # Default rules for deployment.
 DESTDIR = $$PWD/bin

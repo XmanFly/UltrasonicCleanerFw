@@ -32,6 +32,7 @@
 /Build/
 /Listings
 /Output/
+/bin/
 
 # —— 编辑器 & 系统 ——
 # 备份、临时文件
@@ -42,3 +43,6 @@
 # Windows 缓存、macOS 缓存
 Thumbs.db
 .DS_Store
+
+# Qt
+*.user

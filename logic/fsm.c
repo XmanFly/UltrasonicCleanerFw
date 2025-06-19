@@ -5,15 +5,23 @@
 #include "hal/ultrasonic.h"
 #include "hal/battery.h"
 #include "hal/touch.h"
+#include "common/platform.h"
 
 #define LOW_MV  2900
 #define WARN_MV 2800
 #define FULL_MV 4200
 #define CLEAN_MS 180000u
 
-typedef enum{OFF,WORK,CHARGE,LOW,FINISH,ABN} st_t;
+typedef enum{
+    OFF,
+    WORK,
+    CHARGE,
+    LOW,
+    FINISH,
+    ABN
+} st_t;
 static st_t st;
-static int t_clean=-1,t_tmp=-1;
+static int t_clean=-1, t_tmp=-1;
 
 static void enter(st_t s);
 
@@ -29,6 +37,7 @@ static void to_off(void)
 
 static void enter(st_t s)
 {
+    qtPrint("fsm enter %d", s);
     if(t_clean>=0) {
         timer_stop(t_clean);
         t_clean=-1;
@@ -40,7 +49,13 @@ static void enter(st_t s)
     st=s;
     switch(s){
     case OFF:
-        hal_blue_pwm_set(0); {u8 i; for(i=0;i<9;i++) hal_red_pwm_set(i,0);}
+        hal_blue_pwm_set(0);
+        {
+            u8 i;
+            for(i=0;i<9;i++) {
+                hal_red_pwm_set(i,0);
+            }
+        }
         hal_us_stop();
         anim_set(ANIM_NONE,0,0);
         break;
@@ -70,27 +85,24 @@ static void enter(st_t s)
     }
 }
 
-void fsm_init(void){
-    
+void fsm_init(void)
+{   
+    qtPrint("xman\n");
+
     hal_batt_init();
     hal_touch_init();
     anim_init();
     enter(OFF);
 }
 
-void fsm_tick_1ms(void){
-    soft_timer_tick_1ms();
+void fsm_tick_1ms(void)
+{
 }
 
-void fsm_loop(void){
+void fsm_loop(void)
+{
     soft_timer_task();
-#ifdef PLATFORM_QT
-    static u8 tick=0;
-    tick++;
-    if(tick>=2){ tick=0;
-        anim_tick_2ms();
-    };
-#endif
+
     switch(st){
     case OFF:
         if(hal_touch_event() && !hal_batt_is_chg() && hal_batt_get_mv()>WARN_MV) {
