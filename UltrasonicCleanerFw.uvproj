@@ -49,7 +49,7 @@
           <OutputName>UltrasonicCleanerFw</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\Listings\</ListingPath>
@@ -233,7 +233,7 @@
               <RCB>
                 <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Size>0xffff</Size>
               </RCB>
               <RXB>
                 <Type>0</Type>
@@ -324,7 +324,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>.\include;.\app;.\bsp;.\drivers;.\drivers\led;.\services;.\services\anim</IncludePath>
             </VariousControls>
           </C51>
           <Ax51>
@@ -380,6 +380,131 @@
               <FileName>STARTUP.A51</FileName>
               <FileType>2</FileType>
               <FilePath>.\STARTUP.A51</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>app</GroupName>
+          <Files>
+            <File>
+              <FileName>main_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\app\main_emb.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>common</GroupName>
+          <Files>
+            <File>
+              <FileName>types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\common\types.h</FilePath>
+            </File>
+            <File>
+              <FileName>platform.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\common\platform.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>services</GroupName>
+          <Files>
+            <File>
+              <FileName>anim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\services\anim.c</FilePath>
+            </File>
+            <File>
+              <FileName>soft_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\services\soft_timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>anim.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\services\anim.h</FilePath>
+            </File>
+            <File>
+              <FileName>soft_timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\services\soft_timer.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>hal</GroupName>
+          <Files>
+            <File>
+              <FileName>batt_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\batt_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\led_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_red_soft_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\led_red_soft_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>time_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\time_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\touch_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>us_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\us_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>battery.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\battery.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\led.h</FilePath>
+            </File>
+            <File>
+              <FileName>time.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\time.h</FilePath>
+            </File>
+            <File>
+              <FileName>touch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\touch.h</FilePath>
+            </File>
+            <File>
+              <FileName>ultrasonic.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\ultrasonic.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>logic</GroupName>
+          <Files>
+            <File>
+              <FileName>fsm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\logic\fsm.c</FilePath>
+            </File>
+            <File>
+              <FileName>fsm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\logic\fsm.h</FilePath>
             </File>
           </Files>
         </Group>
