@@ -1,6 +1,7 @@
 #include "hal/time.h"
 #include "common/types.h"
 #include "services/anim.h"
+#include "services/touch_service.h"
 
 #ifndef PLATFORM_QT
 #include "STC8H.h"
@@ -30,12 +31,12 @@ void hal_time_tick_1ms(void)
 {   
 	static u8 slice2ms = 0;	
 	
-	fsm_tick_1ms();
     soft_timer_tick_1ms();
-    
+    touch_service_tick_1ms();
+
     if(++slice2ms >= 2) {
         slice2ms = 0;
         anim_tick_2ms();
-    }	
+    }
 }
 #endif

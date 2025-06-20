@@ -1,7 +1,7 @@
 #include "services/soft_timer.h"
 #include "common/platform.h"
 
-#define MAX_TMR 16
+#define MAX_TMR 4
 
 typedef struct
 {
@@ -51,10 +51,12 @@ void soft_timer_tick_1ms(void)
 void soft_timer_task(void)
 {
     int i;
+    timer_cb_t  tmpCb; // 此处必须先备份回调函数,放到最后执行,防止回调执行过程中把定时器删除了,
+                       // 然后又分配了定时器,结果回调后,把刚刚分配的定时器清空了
 
     for(i = 0; i < MAX_TMR; i++) {
         if(tbl[i].cb && (tbl[i].cnt == 0)) {
-            tbl[i].cb();
+            tmpCb = tbl[i].cb;
 
             if(tbl[i].rep) {
                 tbl[i].cnt = tbl[i].period;
@@ -63,6 +65,9 @@ void soft_timer_task(void)
             {
                 tbl[i].cb = 0;
             }
+
+            // 执行回调
+            tmpCb();
         }
     }
 }

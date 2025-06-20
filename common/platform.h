@@ -10,9 +10,10 @@ extern "C" {
 
     #define INLINE static
     #define xdata
+
     /* 任意格式化输出 + 立即刷新 */
     #define qtPrint(fmt, ...)                                        \
-        do {                                                         \
+        do {														 \
             fprintf(stdout, (fmt), ##__VA_ARGS__);                   \
             fflush(stdout);                                          \
         } while (0)

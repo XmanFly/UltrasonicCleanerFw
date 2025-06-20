@@ -18,6 +18,25 @@ Window {
         GridLayout {
             Layout.preferredWidth: parent.width * 0.5
             columns: 2
+            columnSpacing: 8
+            Text {
+                text: "系统状态"
+            }
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: {
+                    var statusMap = new Map([
+                                                [0, "关机"],
+                                                [1, "清洗中"],
+                                                [2, "充电"],
+                                                [3, "电量低"],
+                                                [4, "工作完成"],
+                                                [5, "异常"]
+                                            ])
+                    return statusMap.get(SimViewModel.fsmState) || SimViewModel.fsmState
+                }
+            }
+
             Text {
                 text: "适配器"
             }
@@ -35,7 +54,7 @@ Window {
                 Slider {
                     id: batQuantity
                     from: 0
-                    to: 4
+                    to: 5000
                     onValueChanged: {
                         SimViewModel.batQuatity = value
                     }

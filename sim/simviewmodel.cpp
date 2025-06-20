@@ -1,5 +1,7 @@
 #include "platform.h"
 #include "simviewmodel.h"
+#include "hal/touch.h"
+#include "hal/battery.h"
 #include <QDebug>
 
 static SimViewModel *g_self = nullptr;
@@ -8,16 +10,28 @@ SimViewModel::SimViewModel(QObject *parent)
     : QObject{parent}
 {
     g_self = this;
+    connect(this, &SimViewModel::batQuatityChanged,
+            [this](){
+        hal_batt_sim_set_mv(m_batQuatity);
+    });
+    hal_batt_sim_set_mv(m_batQuatity);
+    connect(this, &SimViewModel::adapterConnectedChanged,
+            [this](){
+        hal_batt_sim_set_chg(m_adapterConnected);
+    });
+    hal_batt_sim_set_chg(m_adapterConnected);
 }
 
 void SimViewModel::pressed()
 {
     qDebug();
+    hal_touch_sim_set(1);
 }
 
 void SimViewModel::released()
 {
     qDebug();
+    hal_touch_sim_set(0);
 }
 
 bool SimViewModel::adapterConnected() const
@@ -90,7 +104,25 @@ void SimViewModel::setCleanerSpeed(int newCleanerSpeed)
     emit cleanerSpeedChanged();
 }
 
+int SimViewModel::fsmState() const
+{
+    return m_fsmState;
+}
+
+void SimViewModel::setFsmState(int newFsmState)
+{
+    if (m_fsmState == newFsmState)
+        return;
+    m_fsmState = newFsmState;
+    emit fsmStateChanged();
+}
+
 void SimViewModel::onHalUsCallback(u8 on)
 {
     g_self->setCleanerSpeed(on);
+}
+
+void SimViewModel::onEnterFsmStateCallback(u8 st)
+{
+    g_self->setFsmState(st);
 }

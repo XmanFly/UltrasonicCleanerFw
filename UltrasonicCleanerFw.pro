@@ -4,6 +4,9 @@ DEFINES += PLATFORM_QT
 
 INCLUDEPATH += common hal/sim services logic
 
+# 对于发布构建，添加宏定义以启用日志上下文
+release: DEFINES += QT_MESSAGELOGCONTEXT
+
 SOURCES += \
     hal/sim/led_sim.c \
     hal/sim/us_sim.c \
@@ -13,6 +16,7 @@ SOURCES += \
     services/soft_timer.c \
     services/anim.c \
     logic/fsm.c \
+    services/touch_service.c \
     sim/main_sim.cpp \
     sim/simviewmodel.cpp
 
@@ -28,6 +32,7 @@ HEADERS += \
     logic/fsm.h \
     services/anim.h \
     services/soft_timer.h \
+    services/touch_service.h \
     sim/simviewmodel.h
 
 

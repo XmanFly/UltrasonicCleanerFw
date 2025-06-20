@@ -38,11 +38,12 @@
 
 void fwInit(QObject *parent, SimViewModel *simViewModel)
 {
-    // 注册回调
-    hal_us_set_callback(simViewModel->onHalUsCallback);
-
     hal_time_init();
     fsm_init();
+
+    // 注册回调
+    hal_us_set_callback(simViewModel->onHalUsCallback);
+    fsm_set_callback(simViewModel->onEnterFsmStateCallback);
 
     QTimer *loopTimer = new QTimer(parent);
     loopTimer->callOnTimeout([](){
@@ -77,7 +78,6 @@ int main(int argc, char *argv[])
 
     SimViewModel simViewModel;
     fwInit(&app, &simViewModel);
-
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("SimViewModel", &simViewModel);

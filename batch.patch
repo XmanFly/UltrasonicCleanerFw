@@ -1,0 +1,106 @@
+diff --unified=0 hal/touch.h hal/touch.h
+@@
+ uint8_t hal_touch_event(void);
++uint8_t hal_touch_is_pressed(void);   /* 1 = pressed */
+
+diff --unified=0 hal/embedded/touch_emb.c hal/embedded/touch_emb.c
+@@
+ static volatile unsigned char event_flag = 0;
++static volatile unsigned char key_level  = 0;   /* 1 = pressed */
+@@
+-    event_flag = 1;
++    event_flag = 1;
++    key_level  = 1;
+@@
+ }
++
++unsigned char hal_touch_is_pressed(void)
++{
++    return key_level;
++}
+
+diff --unified=0 hal/sim/touch_sim.cpp hal/sim/touch_sim.cpp
+@@
+ static unsigned char event_flag = 0;
+ static unsigned char cur_state  = 0;
+@@
+ void hal_touch_sim_trigger(void)
+ {
+-    event_flag = 1;
+-    cur_state  = 1;
++    event_flag = 1;
++    cur_state  = 1;
+ }
++
++unsigned char hal_touch_is_pressed(void)
++{
++    return cur_state;
++}
+
+diff --unified=0 hal/embedded/led_red_soft_emb.c hal/embedded/led_red_soft_emb.c
+@@
+-if(slice == 0) {
+-    /* slice rollover */
+-}
++if(slice == 0) {
++    anim_tick_2ms();
++}
+
+diff --unified=0 logic/fsm.c logic/fsm.c
+@@
+-static unsigned int touch_ms = 0;
++static unsigned int touch_ms = 0;     /* 按键按下时长 ms */
+@@
+-    if(hal_touch_is_pressed()) {
+-        if(cnt_deb < 50) cnt_deb++;
+-        if(cnt_deb == 50) stable = 1;
+-    } else {
+-        if(cnt_deb) cnt_deb--;
+-        if(cnt_deb == 0) stable = 0;
+-    }
+-
+-    if(stable) touch_ms++;
+-    else       touch_ms = 0;
++    if(hal_touch_is_pressed()) {
++        if(cnt_deb < 50) cnt_deb++;
++        if(cnt_deb == 50) stable = 1;
++    } else {
++        if(cnt_deb) cnt_deb--;
++        if(cnt_deb == 0) stable = 0;
++    }
++
++    if(stable) {
++        if(touch_ms < 60000) touch_ms++;
++    } else {
++        touch_ms = 0;
++    }
+@@
+-        case OFF:
+-            if(touch_ms >= 500 && !hal_batt_is_chg() && hal_batt_get_mv() > WARN_MV) {
+-                enter(WORK);
+-                touch_ms = 0;
+-            }
+-            break;
++        case OFF:
++            if(touch_ms >= 500 && !hal_batt_is_chg() && hal_batt_get_mv() > WARN_MV) {
++                enter(WORK);
++                touch_ms = 0;
++            }
++            break;
+@@
+-        case WORK:
+-            if(touch_ms >= 2000) {
+-                enter(OFF);
+-                touch_ms = 0;
+-            } else if(hal_batt_get_mv() < LOW_MV) {
+-                enter(LOW);
+-            }
+-            break;
++        case WORK:
++            if(touch_ms >= 2000) {
++                enter(OFF);
++                touch_ms = 0;
++            } else if(hal_batt_get_mv() < LOW_MV) {
++                enter(LOW);
++            }
++            break;

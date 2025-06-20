@@ -12,6 +12,7 @@ class SimViewModel : public QObject
     Q_PROPERTY(int blueLedSpeed READ blueLedSpeed WRITE setBlueLedSpeed NOTIFY blueLedSpeedChanged)
     Q_PROPERTY(int redLedSpeed READ redLedSpeed WRITE setRedLedSpeed NOTIFY redLedSpeedChanged)
     Q_PROPERTY(int cleanerSpeed READ cleanerSpeed WRITE setCleanerSpeed NOTIFY cleanerSpeedChanged)
+    Q_PROPERTY(int fsmState READ fsmState WRITE setFsmState NOTIFY fsmStateChanged)
 public:
     explicit SimViewModel(QObject *parent = nullptr);
     Q_INVOKABLE void pressed(); // 按下按键
@@ -32,12 +33,16 @@ public:
     int cleanerSpeed() const;
     void setCleanerSpeed(int newCleanerSpeed);
 
+    int fsmState() const;
+    void setFsmState(int newFsmState);
+
 private:
-    bool m_adapterConnected; // 适配器连接
-    float m_batQuatity; // 电池电量
-    int m_blueLedSpeed; // 蓝灯闪烁速度
-    int m_redLedSpeed; // 红灯闪烁速度
-    int m_cleanerSpeed; // 超声速度
+    bool m_adapterConnected = false; // 适配器连接
+    float m_batQuatity = 0; // 电池电量
+    int m_blueLedSpeed = 0; // 蓝灯闪烁速度
+    int m_redLedSpeed = 0; // 红灯闪烁速度
+    int m_cleanerSpeed = 0; // 超声速度
+    int m_fsmState = 0; // 系统状态
 
 signals:
     void adapterConnectedChanged();
@@ -46,8 +51,11 @@ signals:
     void redLedSpeedChanged();
     void cleanerSpeedChanged();
 
+    void fsmStateChanged();
+
 public: // 回调
     static void onHalUsCallback(u8 on);
+    static void onEnterFsmStateCallback(u8 st);
 };
 
 #endif // SIMVIEWMODEL_H

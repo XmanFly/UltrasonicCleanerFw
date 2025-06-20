@@ -4,8 +4,7 @@
 #include "STC8H.h"
 
 void hal_batt_init(void)
-{
-    
+{    
     ADC_CONTR=0x80;
 }
 

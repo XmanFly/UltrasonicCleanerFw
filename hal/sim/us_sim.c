@@ -6,13 +6,17 @@ static hal_us_cb_tb user_cb = 0;
 void hal_us_start(void)
 {
     on=1;
-    user_cb(on);
+    if(user_cb) {
+        user_cb(on);
+    }
 }
 
 void hal_us_stop(void)
 {
     on=0;
-    user_cb(on);
+    if(user_cb) {
+        user_cb(on);
+    }
 }
 
 u8 sim_us_on(void)
