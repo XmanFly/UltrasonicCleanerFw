@@ -33,7 +33,8 @@ HEADERS += \
     services/anim.h \
     services/soft_timer.h \
     services/touch_service.h \
-    sim/simviewmodel.h
+    sim/simviewmodel.h \
+    sim/timerworker.h
 
 
 RESOURCES += qt/qml/qml.qrc

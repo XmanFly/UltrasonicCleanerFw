@@ -9,7 +9,7 @@
 #define LOW_MV   2800
 #define WARN_MV  2800
 #define FULL_MV  4200
-#define CLEAN_MS 1000u // 清洗时间
+#define CLEAN_MS 2000u // 清洗时间
 
 typedef enum {
     OFF,
@@ -63,7 +63,6 @@ static void enter(st_t s)
             }
         }
         hal_blue_pwm_set(0);
-        hal_us_stop();
         anim_set(ANIM_NONE, 0, 0);
         break;
 
@@ -75,24 +74,20 @@ static void enter(st_t s)
 
     case CHARGE:
         anim_set(ANIM_BREATH, 2000, 0);
-        hal_us_stop();
         break;
 
     case LOW:
         anim_set(ANIM_FLASH, 500, 250);
-        hal_us_stop();
         break;
 
     case FINISH:
 //        anim_set(ANIM_BREATH, 3000, 0);
         t_tmp = timer_start(1000, to_off, 0);
-        hal_us_stop();
         break;
 
     case ABN:
         anim_set(ANIM_FLASH, 500, 250);
         t_tmp = timer_start(3000, to_off, 0);
-        hal_us_stop();
         break;
     }
 }
@@ -182,7 +177,7 @@ void fsm_loop(void)
     case WORK:
         if(tev == TOUCH_EVT_PRESS_2S)
         {
-            enter(OFF);
+            enter(FINISH);
         }
         else if(hal_batt_get_mv() < LOW_MV)
         {

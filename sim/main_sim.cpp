@@ -7,6 +7,7 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QThread>
+#include <QObject>
 #include "common/platform.h"
 #include "hal/ultrasonic.h"
 #include "logic/fsm.h"
@@ -15,26 +16,27 @@
 #include "hal/time.h"
 #include "services/soft_timer.h"
 #include "sim/simviewmodel.h"
+#include "sim/timerworker.h"
 
- void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
- {
-     QDateTime time = QDateTime::currentDateTime();
-     QString out = time.toString("[yyyy-MM-dd hh:mm:ss.zzz]") +
-             "[" + QString(context.category) + "]" +
-             "[" + QString(context.function) + "]"+ msg;
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QDateTime time = QDateTime::currentDateTime();
+    QString out = time.toString("[yyyy-MM-dd hh:mm:ss.zzz]") +
+            "[" + QString(context.category) + "]" +
+            "[" + QString(context.function) + "]"+ msg;
 
-     switch (type) {
-     case QtDebugMsg:
-         break;
-     case QtInfoMsg:
-     case QtWarningMsg:
-     case QtCriticalMsg:
-     case QtFatalMsg:
-         break;
-     }
-     fprintf(stdout, "%s\n", out.toLocal8Bit().constData());
-     fflush(stdout);
- }
+    switch (type) {
+    case QtDebugMsg:
+        break;
+    case QtInfoMsg:
+    case QtWarningMsg:
+    case QtCriticalMsg:
+    case QtFatalMsg:
+        break;
+    }
+    fprintf(stdout, "%s\n", out.toLocal8Bit().constData());
+    fflush(stdout);
+}
 
 void fwInit(QObject *parent, SimViewModel *simViewModel)
 {
@@ -51,13 +53,15 @@ void fwInit(QObject *parent, SimViewModel *simViewModel)
     });
     loopTimer->start(0);
 
-    QTimer *tick1MsTimer = new QTimer(parent);
-    tick1MsTimer->callOnTimeout([](){
+    auto tick1MsTimer = new TimerWorker(1);
+    auto tick1MsTh     = new QThread;
+    tick1MsTimer->moveToThread(tick1MsTh);
+    QObject::connect(tick1MsTh, &QThread::started, tick1MsTimer, &TimerWorker::init);
+    QObject::connect(tick1MsTimer, &TimerWorker::tick,
+                     [](){
         hal_time_tick_1ms();
-    });
-    tick1MsTimer->setTimerType(Qt::TimerType::PreciseTimer);
-    tick1MsTimer->start(1);
-
+    }); // QueuedConnection
+    tick1MsTh->start();
 }
 
 int main(int argc, char *argv[])
