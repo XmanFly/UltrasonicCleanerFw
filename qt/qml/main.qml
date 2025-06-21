@@ -67,55 +67,62 @@ Window {
         }
 
         ColumnLayout {
-
-            Rectangle {
-                id: blueLed
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Item {
+                Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredWidth: height
-                Layout.alignment: Qt.AlignHCenter
-                radius: width / 2
-                color: "white"
-                border {
-                    width: 20
-                    color: "blue"
-                }
-
-                Rectangle {
-                    id: redLed
+                BreathingRectangle {
+                    id: blueLed
                     anchors {
-                        fill: parent
-                        margins: 20
+                        centerIn: parent
                     }
-                    radius: width / 2
+                    width: Math.min(parent.width, parent.height)
+                    height: Math.min(parent.width, parent.height)
                     color: "white"
                     border {
                         width: 20
-                        color: "red"
+                        color: "blue"
                     }
+                    breathDuration: SimViewModel.blueLedSpeed
 
-                    Rectangle {
-                        id: cleaner
+                    BreathingRectangle {
+                        id: redLed
                         anchors {
-                            centerIn: parent
+                            fill: parent
+                            margins: 20
                         }
-                        width: 20
-                        height: parent.height - 2 * parent.border.width - 10
-                        color: "green"
-                        /* 关键两行 —— 指定旋转中心并开启动画 */
-                        transformOrigin: Item.Center              // 围绕中心
-                        RotationAnimation {                       // 无限顺时针旋转
-                            target: cleaner
-                            property: "rotation"
-                            from: 0; to: 360
-                            duration: 1000                       // 2.5 s 一圈
-                            loops: Animation.Infinite
-                            easing.type: Easing.Linear
-                            running: SimViewModel.cleanerSpeed
+                        color: "white"
+                        border {
+                            width: 20
+                            color: "red"
+                        }
+                        breathDuration: SimViewModel.redLedSpeed
+
+                        Rectangle {
+                            id: cleaner
+                            anchors {
+                                centerIn: parent
+                            }
+                            width: 20
+                            height: Math.min(parent.width, parent.height) - 2 * parent.border.width
+                            color: "green"
+                            /* 关键两行 —— 指定旋转中心并开启动画 */
+                            transformOrigin: Item.Center              // 围绕中心
+                            RotationAnimation {                       // 无限顺时针旋转
+                                target: cleaner
+                                property: "rotation"
+                                from: 0; to: 360
+                                duration: 1000                       // 2.5 s 一圈
+                                loops: Animation.Infinite
+                                easing.type: Easing.Linear
+                                running: SimViewModel.cleanerSpeed
+                            }
                         }
                     }
                 }
-            }
 
+            }
             Item { Layout.preferredHeight: 40 }
 
             Button {

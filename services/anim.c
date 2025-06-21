@@ -1,33 +1,91 @@
-#include "services/anim.h"
-static xdata const u8 lut[256]={ 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 4, 5, 6, 6, 8, 9, 10, 11, 12, 14, 15, 17, 18, 20, 22, 23, 25, 27, 29, 31, 33, 35, 38, 40, 42, 45, 47, 49, 52, 54, 57, 60, 62, 65, 68, 71, 73, 76, 79, 82, 85, 88, 91, 94, 97, 100, 103, 106, 109, 113, 116, 119, 122, 125, 128, 131, 135, 138, 141, 144, 147, 150, 153, 156, 159, 162, 165, 168, 171, 174, 177, 180, 183, 186, 189, 191, 194, 197, 199, 202, 204, 207, 209, 212, 214, 216, 218, 221, 223, 225, 227, 229, 231, 232, 234, 236, 238, 239, 241, 242, 243, 245, 246, 247, 248, 249, 250, 251, 252, 252, 253, 253, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 254, 254, 253, 253, 252, 252, 251, 250, 249, 248, 247, 246, 245, 243, 242, 241, 239, 238, 236, 234, 232, 231, 229, 227, 225, 223, 221, 218, 216, 214, 212, 209, 207, 204, 202, 199, 197, 194, 191, 189, 186, 183, 180, 177, 174, 171, 168, 165, 162, 159, 156, 153, 150, 147, 144, 141, 138, 135, 131, 128, 125, 122, 119, 116, 113, 109, 106, 103, 100, 97, 94, 91, 88, 85, 82, 79, 76, 73, 71, 68, 65, 62, 60, 57, 54, 52, 49, 47, 45, 42, 40, 38, 35, 33, 31, 29, 27, 25, 23, 22, 20, 18, 17, 15, 14, 12, 11, 10, 9, 8, 6, 6, 5, 4, 3, 2, 2, 1, 1, 1, 0, 0, 0, 0 };
-static anim_t tp;
-static u16 per,on_s,cnt;
+#include "anim.h"
+#include <string.h>
+
+#ifdef PLATFORM_QT
+static anim_cb_tb user_cb = 0;
+void anim_set_callback(anim_cb_tb cb)
+{
+    user_cb = cb;
+}
+#endif
+
+#define LUT_LEN 128   /* 128 points → 7‑bit */
+
+/* 半余弦查表 (0…π)
+ *  python:  round(sin(i*pi/127))*127.5) for i in 0..127
+ */
+static const u8 cos_lut[LUT_LEN] = {
+    0,   3,   6,   9,  13,  16,  19,  22,  25,  28,  31,  34,  37,  40,  43,  46,
+    49,  52,  55,  58,  61,  63,  66,  69,  71,  74,  76,  79,  81,  84,  86,  88,
+    91,  93,  95,  97,  99, 101, 103, 105, 107, 108, 110, 111, 113, 114, 116, 117,
+    118, 119, 120, 121, 122, 123, 124, 125, 125, 126, 126, 127, 127, 127, 127, 127,
+    127, 127, 127, 127, 127, 126, 126, 125, 125, 124, 123, 122, 121, 120, 119, 118,
+    117, 116, 114, 113, 111, 110, 108, 107, 105, 103, 101,  99,  97,  95,  93,  91,
+    88,  86,  84,  81,  79,  76,  74,  71,  69,  66,  63,  61,  58,  55,  52,  49,
+    46,  43,  40,  37,  34,  31,  28,  25,  22,  19,  16,  13,   9,   6,   3,   0
+};
+
+typedef struct {
+    anim_type_t type;
+    u16    period;   /* ms / 完整呼吸周期 */
+    u16    phase;    /* 0…period */
+} anim_ch_t;
+
+static anim_ch_t ch[ANIM_CH_MAX];
 
 void anim_init(void)
 {
-    tp=ANIM_NONE;
-    cnt=0;
+    memset(ch, 0, sizeof(ch));
 }
 
-void anim_set(anim_t t,u16 p,u16 on)
+void anim_set(u8 id, anim_type_t type, u16 period_ms)
 {
-    tp=t;
-    per=p/2;
-    on_s=on/2;
-    cnt=0;
+    if (id >= ANIM_CH_MAX) return;
+    ch[id].type   = type;
+    ch[id].period = period_ms;
+    ch[id].phase  = 0;
+#ifdef PLATFORM_QT
+    user_cb(id, type, period_ms);
+#endif
 }
 
-void anim_tick_2ms(void)
+/* 在不闪跳的前提下动态调周期 */
+void anim_update_period(u8 id, u16 new_per)
 {
-    cnt++;
-    if(cnt>=per) cnt=0;
+    if (id >= ANIM_CH_MAX) return;
+    if (ch[id].type == ANIM_NONE) return;
+    ch[id].phase = (u32)ch[id].phase * new_per / ch[id].period;
+    ch[id].period = new_per;
 }
 
-u8 anim_get_level(void)
+static u8 lut_sample(u16 phase, u16 period)
 {
-    switch(tp){
-    case ANIM_BREATH: return lut[(u32)cnt*256/per];
-    case ANIM_FLASH: return (cnt<on_s)?255:0;
-    default:return 0;
+    /* 将相位按 0‑127 缩放 */
+    u32 idx = ((u32)phase * LUT_LEN) / period;
+    return cos_lut[idx & 0x7F];
+}
+
+u8 anim_get_level(u8 id)
+{
+    if (id >= ANIM_CH_MAX) return 0;
+
+    anim_ch_t *a = &ch[id];
+    switch(a->type) {
+    case ANIM_BREATH:   return lut_sample(a->phase, a->period);
+    default:            return 0;
     }
 }
+
+/* 系统 1 ms tick 里每 2 ms 调用一次 */
+void anim_tick_2ms(void)
+{
+    for (u8 i = 0; i < ANIM_CH_MAX; ++i) {
+        anim_ch_t *a = &ch[i];
+        if (a->type == ANIM_NONE) continue;
+        a->phase += 2;                       /* 2 ms 步进 */
+        if (a->phase >= a->period) {
+            a->phase = 0;
+        }
+    }
+}
+

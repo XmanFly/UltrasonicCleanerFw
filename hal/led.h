@@ -7,8 +7,8 @@ extern "C" {
 
 #include "common/types.h"
 
-void hal_blue_pwm_set(u8 duty);
-void hal_red_pwm_set(u8 idx,u8 duty);
+void led_hw_init(void);   /* GPIO + Timer‑3 reload‑table 准备 */
+void led_hw_start(void);  /* 启动 Timer‑3 软‑PWM */
 
 #ifdef __cplusplus
 }   /* extern "C" */

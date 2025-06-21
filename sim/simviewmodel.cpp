@@ -126,3 +126,19 @@ void SimViewModel::onEnterFsmStateCallback(u8 st)
 {
     g_self->setFsmState(st);
 }
+
+void SimViewModel::onSetLedCallback(u8 id, u8 type, u16 period_ms)
+{
+    qDebug() << "id" << id << "type" << type << "period" << period_ms;
+    switch (id) {
+    case 0:
+        g_self->setRedLedSpeed(type ? period_ms : 0);
+        break;
+    case 1:
+        g_self->setBlueLedSpeed(type ? period_ms : 0);
+        break;
+    default:
+        break;
+    }
+}
+

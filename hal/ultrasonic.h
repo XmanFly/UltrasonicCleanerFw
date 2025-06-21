@@ -15,7 +15,6 @@ void hal_us_stop(void); // 关闭超声波
 typedef void (*hal_us_cb_tb)(u8 ctrl);
 void hal_us_set_callback(hal_us_cb_tb cb);
 #endif
-	
 
 #ifdef __cplusplus
 }   /* extern "C" */

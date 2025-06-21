@@ -8,7 +8,9 @@
 #include <QTimer>
 #include <QThread>
 #include <QObject>
+#include "anim.h"
 #include "common/platform.h"
+#include "hal/led.h"
 #include "hal/ultrasonic.h"
 #include "logic/fsm.h"
 #include "hal/battery.h"
@@ -46,6 +48,7 @@ void fwInit(QObject *parent, SimViewModel *simViewModel)
     // 注册回调
     hal_us_set_callback(simViewModel->onHalUsCallback);
     fsm_set_callback(simViewModel->onEnterFsmStateCallback);
+    anim_set_callback(simViewModel->onSetLedCallback);
 
     QTimer *loopTimer = new QTimer(parent);
     loopTimer->callOnTimeout([](){
