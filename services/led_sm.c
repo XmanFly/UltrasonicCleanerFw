@@ -3,7 +3,7 @@
 
 typedef struct {
     u8         mode;        /* 当前模式 LED_SM_xxx                */
-    uint16_t        period;      /* 当前周期 (ms) — 对 OFF 无意义       */
+    u16        period;      /* 当前周期 (ms) — 对 OFF 无意义       */
 } led_ctx_t;
 
 static led_ctx_t ctx[LED_SM_CH_MAX];
@@ -11,7 +11,8 @@ static led_ctx_t ctx[LED_SM_CH_MAX];
 /* ----------------------------------------------------------- */
 void led_sm_init(void)
 {
-    for(u8 i = 0; i < LED_SM_CH_MAX; ++i) {
+	u8 i;
+    for(i = 0; i < LED_SM_CH_MAX; ++i) {
         ctx[i].mode   = LED_SM_OFF;
         ctx[i].period = 0;
         anim_set(i, ANIM_NONE, 0);
@@ -19,11 +20,11 @@ void led_sm_init(void)
 }
 
 /* ----------------------------------------------------------- */
-void led_sm_set(u8 ch, led_sm_mode_t mode, uint16_t period_ms)
-{
+void led_sm_set(u8 ch, led_sm_mode_t mode, u16 period_ms)
+{	
+	led_ctx_t *c = &ctx[ch];
+	
     if(ch >= LED_SM_CH_MAX) return;
-
-    led_ctx_t *c = &ctx[ch];
 
     /* 若模式和周期均未改变 → 直接返回，避免多余调用 */
     if(mode == c->mode && (mode == LED_SM_OFF || period_ms == c->period))

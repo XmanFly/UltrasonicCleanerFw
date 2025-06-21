@@ -184,13 +184,13 @@ void fsm_loop(void)
         {
             enter(FINISH);
         }
-
-        u16 mv = hal_batt_get_mv();
-        if(mv < LOW_MV)
-            led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 100);
-        else if(mv > LOW_HYST_MV)
-            led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 2000);
-
+		{
+			u16 mv = hal_batt_get_mv();
+			if(mv < LOW_MV)
+				led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 100);
+			else if(mv > LOW_HYST_MV)
+				led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 2000);
+		}
         break;
 
     case FINISH:

@@ -1,6 +1,5 @@
-#include "led.h"
-#include "anim.h"
-#include "STC8.H"      /* 官方头文件，含 T3/T3CON/IE2 定义 */
+#include "hal/led.h"
+#include "services/anim.h"
 #include <intrins.h>
 
 /* === 用户可修改的硬件映射 ============================= */
@@ -15,7 +14,7 @@
 /* ======================================================= */
 
 /* 计算 7 段重装载值  (12 T → 1 µs / tick) */
-static const uint16_t reload_tbl[SEGMENTS] = {
+static const u16 reload_tbl[SEGMENTS] = {
     65536 - (UNIT_TICKS << 0),   /*  79 */
     65536 - (UNIT_TICKS << 1),   /* 158 */
     65536 - (UNIT_TICKS << 2),   /* 316 */
@@ -25,11 +24,11 @@ static const uint16_t reload_tbl[SEGMENTS] = {
     65536 - (UNIT_TICKS << 6)    /* 5 056 */
 };
 
-static uint8_t cur_bit;          /* 0‑6 */
-static uint8_t red_lvl, blue_lvl;
+static u8 cur_bit;          /* 0‑6 */
+static u8 red_lvl, blue_lvl;
 
 /* 封装写 T3 重装 */
-static inline void reload_t3(uint16_t val)
+static void reload_t3(u16 val)
 {
     T3H = val >> 8;
     T3L = val & 0xFF;
@@ -58,7 +57,7 @@ void led_hw_start(void)
     cur_bit = 0;
 
     IE2  |= 0x08;     /* ET3 = 1 (Timer‑3 interrupt enable) */
-    T3CON |= 0x04;    /* TR3 = 1  (start) */
+//    T3CON |= 0x04;    /* TR3 = 1  (start) */
 }
 
 /* Timer‑3 ISR (vector 0x00AB » Keil interrupt 19) */
@@ -91,4 +90,3 @@ void timer3_isr(void) interrupt 19
 
     if (++cur_bit >= SEGMENTS) cur_bit = 0;
 }
-#endif

@@ -14,7 +14,7 @@ void anim_set_callback(anim_cb_tb cb)
 /* 半余弦查表 (0…π)
  *  python:  round(sin(i*pi/127))*127.5) for i in 0..127
  */
-static const u8 cos_lut[LUT_LEN] = {
+static xdata const u8 cos_lut[LUT_LEN] = {
     0,   3,   6,   9,  13,  16,  19,  22,  25,  28,  31,  34,  37,  40,  43,  46,
     49,  52,  55,  58,  61,  63,  66,  69,  71,  74,  76,  79,  81,  84,  86,  88,
     91,  93,  95,  97,  99, 101, 103, 105, 107, 108, 110, 111, 113, 114, 116, 117,
@@ -76,9 +76,10 @@ static u8 lut_sample(u16 phase, u16 period)
 
 u8 anim_get_level(u8 id)
 {
+	anim_ch_t *a;
     if (id >= ANIM_CH_MAX) return 0;
 
-    anim_ch_t *a = &ch[id];
+    a = &ch[id];
     switch(a->type) {
     case ANIM_BREATH:   return lut_sample(a->phase, a->period);
     case ANIM_CONST:	return 127;
@@ -89,7 +90,8 @@ u8 anim_get_level(u8 id)
 /* 系统 1 ms tick 里每 2 ms 调用一次 */
 void anim_tick_2ms(void)
 {
-    for (u8 i = 0; i < ANIM_CH_MAX; ++i) {
+	u8 i;
+    for (i = 0; i < ANIM_CH_MAX; ++i) {
         anim_ch_t *a = &ch[i];
         if (a->type == ANIM_NONE) continue;
         a->phase += 2;                       /* 2 ms 步进 */

@@ -8,7 +8,6 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
 #include "common/types.h"
 
 #define LED_RED   0         /* 9  ×  红灯  同步通道  */

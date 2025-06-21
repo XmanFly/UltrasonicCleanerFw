@@ -446,6 +446,11 @@
               <FileType>5</FileType>
               <FilePath>.\services\touch_service.h</FilePath>
             </File>
+            <File>
+              <FileName>led_sm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\services\led_sm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

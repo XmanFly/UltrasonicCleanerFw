@@ -1,7 +1,6 @@
 #ifndef SERVICES_BLUE_LED_SM_H
 #define SERVICES_BLUE_LED_SM_H
 
-#include <stdint.h>
 #include "common/types.h"
 
 #ifdef __cplusplus
@@ -28,7 +27,7 @@ void  led_sm_init(void);
  *  mode       : LED_SM_xxx
  *  period_ms  : 对 BREATH/FLASH 的周期，单位 ms；OFF 模式忽略
  */
-void  led_sm_set(u8 ch, led_sm_mode_t mode, uint16_t period_ms);
+void  led_sm_set(u8 ch, led_sm_mode_t mode, u16 period_ms);
 
 #ifdef __cplusplus
 }   /* extern "C" */
