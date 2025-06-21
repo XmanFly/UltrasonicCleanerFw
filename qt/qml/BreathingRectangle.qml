@@ -21,6 +21,12 @@ Item {
 
     // 呼吸周期（ms）
     property int breathDuration: 200
+    onBreathDurationChanged: {
+        console.log("duration " + breathDuration)
+    }
+
+    property int ledState: 0 // 同步anim_type_t
+
 
     // 透明度范围
     property real minOpacity: 0.3
@@ -32,7 +38,7 @@ Item {
         width: Math.min(parent.width, parent.height)
         height: Math.min(parent.width, parent.height)
         radius: Math.min(width, height) / 2
-        visible: breathDuration
+        visible: ledState > 0
 
         transformOrigin: Item.Center
 
@@ -40,11 +46,33 @@ Item {
         opacity: minOpacity
 
         // 透明度动画
-        SequentialAnimation on opacity {
-            running: breathDuration
+        SequentialAnimation {
+            id: breathAnim
+            running: ledState === 1
             loops: Animation.Infinite
-            NumberAnimation { from: minOpacity; to: maxOpacity; duration: breathDuration/2; easing.type: Easing.InOutQuad }
-            NumberAnimation { from: maxOpacity; to: minOpacity; duration: breathDuration/2; easing.type: Easing.InOutQuad }
+            NumberAnimation {
+                target: rect; property: "opacity"
+                from: minOpacity;
+                to: maxOpacity;
+                duration: breathDuration/2;
+                easing.type: Easing.InOutQuad
+                onDurationChanged: {
+                    breathAnim.restart()
+                }
+            }
+            NumberAnimation {
+                target: rect; property: "opacity"
+                from: maxOpacity;
+                to: minOpacity;
+                duration: breathDuration/2;
+                easing.type: Easing.InOutQuad
+                onDurationChanged: {
+                    breathAnim.restart()
+                }
+            }
+            onStopped: {
+                rect.opacity = maxOpacity
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ extern "C" {
 #define LED_BLUE  1         /* 1  ×  蓝灯  独立通道  */
 #define ANIM_CH_MAX 2
 
-typedef enum { ANIM_NONE = 0, ANIM_BREATH } anim_type_t;
+typedef enum { ANIM_NONE = 0, ANIM_BREATH, ANIM_CONST } anim_type_t;
 
 void     anim_init(void);
 void     anim_set(u8 ch, anim_type_t type, u16 period_ms);

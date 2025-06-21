@@ -44,8 +44,11 @@ void anim_set(u8 id, anim_type_t type, u16 period_ms)
     ch[id].type   = type;
     ch[id].period = period_ms;
     ch[id].phase  = 0;
+
 #ifdef PLATFORM_QT
-    user_cb(id, type, period_ms);
+    if(user_cb) {
+        user_cb(id, type, period_ms);
+    }
 #endif
 }
 
@@ -56,6 +59,12 @@ void anim_update_period(u8 id, u16 new_per)
     if (ch[id].type == ANIM_NONE) return;
     ch[id].phase = (u32)ch[id].phase * new_per / ch[id].period;
     ch[id].period = new_per;
+
+#ifdef PLATFORM_QT
+    if(user_cb) {
+        user_cb(id, ch[id].type, new_per);
+    }
+#endif
 }
 
 static u8 lut_sample(u16 phase, u16 period)
@@ -72,6 +81,7 @@ u8 anim_get_level(u8 id)
     anim_ch_t *a = &ch[id];
     switch(a->type) {
     case ANIM_BREATH:   return lut_sample(a->phase, a->period);
+    case ANIM_CONST:	return 127;
     default:            return 0;
     }
 }

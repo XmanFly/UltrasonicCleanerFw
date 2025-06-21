@@ -2,21 +2,25 @@
 #include "services/soft_timer.h"
 #include "services/anim.h"
 #include "services/touch_service.h"
+#include "services/led_sm.h"
 #include "hal/led.h"
 #include "hal/ultrasonic.h"
 #include "hal/battery.h"
 
 #define LOW_MV   2900 // 工作过程中低于此电压 蓝灯快闪
-#define WARN_MV  2800
+#define LOW_HYST_MV  3000    /* 退出低电警告 (LOW_MV + 100 mV) */
 #define FULL_MV  4200
+#define CHARG_LOW_MV  2800 // 充电时 低于此电量 红灯快闪
+#define CHARG_MID_MV  3500 // 充电时 高于此电量 红灯正常闪烁
 #define CLEAN_MS 10000u // 清洗时间
 
 typedef enum {
     OFF,
     WORK,
-    CHARGE,
-    LOW,
     FINISH,
+    CHARGE,
+    CHARGE_FULL,
+    LOW,			// 启动时 电量过低 红灯快闪
     ABN
 } st_t;
 
@@ -38,6 +42,18 @@ void fsm_set_callback(fsm_cb_tb cb)
     user_cb = cb;
 }
 #endif
+
+
+void fsm_init(void)
+{
+    hal_batt_init();
+    touch_service_init();
+    led_hw_init();
+    anim_init();
+    led_hw_start(); /* 在第一次用灯效前一定初始化 */
+    led_sm_init();
+    enter(OFF);
+}
 
 /* -------- state transition helper -------- */
 static void enter(st_t s)
@@ -61,20 +77,21 @@ static void enter(st_t s)
     case WORK:
         hal_us_start();
         t_clean = timer_start(CLEAN_MS, clean_done, 0);
-        anim_set(LED_BLUE, ANIM_BREATH, 1500);     /* 1.5 s 呼吸 */
         break;
 
     case CHARGE:
-        anim_update_period(LED_RED, 100);
+        break;
+
+    case CHARGE_FULL:
+        led_sm_set(LED_CH_RED, LED_SM_ON, 10);
         break;
 
     case LOW:
-        anim_set(LED_RED,  ANIM_NONE, 0);
-        anim_set(LED_BLUE, ANIM_NONE, 0);
+        led_sm_set(LED_CH_RED, LED_SM_BREATH, 100);
+        t_tmp = timer_start(6000, to_off, 0);
         break;
 
     case FINISH:
-//        anim_set(ANIM_BREATH, 3000, 0);
         t_tmp = timer_start(1000, to_off, 0);
         break;
 
@@ -97,20 +114,26 @@ static void exit(st_t cur)
         /* stop ultrasonic generator */
         hal_us_stop();
 
-        anim_set(LED_BLUE, ANIM_NONE, 0);     /* 关闭蓝灯 */
+        led_sm_set(LED_CH_BLUE, LED_SM_OFF, 0);
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
         break;
 
     case CHARGE:
+        led_sm_set(LED_CH_RED, LED_SM_OFF, 0);
+
         /* charging-done timer */
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
+    case CHARGE_FULL:
+        led_sm_set(LED_CH_RED, LED_SM_OFF, 0);
+        break;
+
     case LOW:
-        /* ensure fast-flash animation stops */
-        anim_set(ANIM_NONE, 0, 0);
+        led_sm_set(LED_CH_RED, LED_SM_OFF, 0);
+        if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
     case FINISH:
@@ -129,17 +152,6 @@ static void exit(st_t cur)
     }
 }
 
-
-void fsm_init(void)
-{
-    hal_batt_init();
-    touch_service_init();
-    led_hw_init();
-    anim_init();
-    led_hw_start(); /* ★ 新：在第一次用灯效前一定初始化 */
-    enter(OFF);
-}
-
 void fsm_loop(void)
 {
 	touch_evt_t tev;
@@ -152,11 +164,14 @@ void fsm_loop(void)
     switch(st)
     {
     case OFF:
-        if(tev == TOUCH_EVT_PRESS_500 &&
-           !hal_batt_is_chg() &&
-           hal_batt_get_mv() > WARN_MV)
-        {
-            enter(WORK);
+        if(tev == TOUCH_EVT_PRESS_500) {
+            if(!hal_batt_is_chg()) {
+                if(hal_batt_get_mv() > LOW_MV) {
+                    enter(WORK);
+                } else {
+                    enter(LOW);
+                }
+            }
         }
 
         if(hal_batt_is_chg()) {
@@ -169,25 +184,36 @@ void fsm_loop(void)
         {
             enter(FINISH);
         }
-        if(hal_batt_get_mv() < LOW_MV)
-        {
-            anim_set(LED_BLUE, ANIM_BREATH, 100);     /* 蓝灯快闪 */
-        }
+
+        u16 mv = hal_batt_get_mv();
+        if(mv < LOW_MV)
+            led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 100);
+        else if(mv > LOW_HYST_MV)
+            led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 2000);
 
         break;
 
+    case FINISH:
+        break;
+
     case CHARGE:
-        if(hal_batt_get_mv() < 3200)
-            anim_set(ANIM_BREATH, 1000, 0);
-        else
-            anim_set(ANIM_BREATH, 2000, 0);
+        if(hal_batt_get_mv() < CHARG_LOW_MV) {
+            led_sm_set(LED_CH_RED, LED_SM_BREATH, 100);
+        } else if(hal_batt_get_mv() > CHARG_MID_MV) {
+            led_sm_set(LED_CH_RED, LED_SM_BREATH, 2000);
+        }
 
         if(hal_batt_get_mv() >= FULL_MV)
         {
-            // 设置灯亮度
-            t_tmp = timer_start(3000, to_off, 0);
+            enter(CHARGE_FULL);
         }
 
+        if(!hal_batt_is_chg()) {
+            enter(OFF);
+        }
+        break;
+
+    case CHARGE_FULL:
         if(!hal_batt_is_chg()) {
             enter(OFF);
         }

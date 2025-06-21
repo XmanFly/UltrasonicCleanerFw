@@ -28,10 +28,11 @@ Window {
                     var statusMap = new Map([
                                                 [0, "关机"],
                                                 [1, "清洗中"],
-                                                [2, "充电"],
-                                                [3, "电量低"],
-                                                [4, "工作完成"],
-                                                [5, "异常"]
+                                                [2, "工作完成"],
+                                                [3, "充电"],
+                                                [4, "充电完成"],
+                                                [5, "电量低"],
+                                                [6, "异常"]
                                             ])
                     return statusMap.get(SimViewModel.fsmState) || SimViewModel.fsmState
                 }
@@ -85,6 +86,7 @@ Window {
                         color: "blue"
                     }
                     breathDuration: SimViewModel.blueLedSpeed
+                    ledState: SimViewModel.blueLedState
 
                     BreathingRectangle {
                         id: redLed
@@ -98,6 +100,7 @@ Window {
                             color: "red"
                         }
                         breathDuration: SimViewModel.redLedSpeed
+                        ledState: SimViewModel.redLedState
 
                         Rectangle {
                             id: cleaner

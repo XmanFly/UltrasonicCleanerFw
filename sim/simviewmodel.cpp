@@ -117,6 +117,32 @@ void SimViewModel::setFsmState(int newFsmState)
     emit fsmStateChanged();
 }
 
+int SimViewModel::redLedState() const
+{
+    return m_redLedState;
+}
+
+void SimViewModel::setRedLedState(int newRedLedState)
+{
+    if (m_redLedState == newRedLedState)
+        return;
+    m_redLedState = newRedLedState;
+    emit redLedStateChanged();
+}
+
+int SimViewModel::blueLedState() const
+{
+    return m_blueLedState;
+}
+
+void SimViewModel::setBlueLedState(int newBlueLedState)
+{
+    if (m_blueLedState == newBlueLedState)
+        return;
+    m_blueLedState = newBlueLedState;
+    emit blueLedStateChanged();
+}
+
 void SimViewModel::onHalUsCallback(u8 on)
 {
     g_self->setCleanerSpeed(on);
@@ -132,10 +158,12 @@ void SimViewModel::onSetLedCallback(u8 id, u8 type, u16 period_ms)
     qDebug() << "id" << id << "type" << type << "period" << period_ms;
     switch (id) {
     case 0:
-        g_self->setRedLedSpeed(type ? period_ms : 0);
+        g_self->setRedLedState(type);
+        g_self->setRedLedSpeed(period_ms);
         break;
     case 1:
-        g_self->setBlueLedSpeed(type ? period_ms : 0);
+        g_self->setBlueLedState(type);
+        g_self->setBlueLedSpeed(period_ms);
         break;
     default:
         break;
