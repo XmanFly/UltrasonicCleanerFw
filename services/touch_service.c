@@ -1,5 +1,6 @@
 #include "services/touch_service.h"
 #include "hal/touch.h"
+#include "hal/uart.h"
 
 /* ------------ static state ------------ */
 static u8  stable   = 0;      /* debounced level: 1 = pressed          */
@@ -19,7 +20,6 @@ void touch_service_init(void)
 void touch_service_tick_1ms(void)
 {
     u8 raw = hal_touch_is_pressed();   /* realtime level from HAL */
-
     /* 50 ms debounce */
     if(raw)
     {
@@ -50,12 +50,15 @@ void touch_service_tick_1ms(void)
         if(press_ms == 500) {
             evt_buf = TOUCH_EVT_PRESS_500;
             qtPrint("touch servce TOUCH_EVT_PRESS_500\r\n");
+                        hal_uart_send_buf("TOU");
         }
         if(press_ms == 2000) {
             evt_buf = TOUCH_EVT_PRESS_2S;
             qtPrint("touch servce TOUCH_EVT_PRESS_2S\r\n");
         }
     }
+
+    P11 = ~P11;
 }
 
 touch_evt_t touch_service_fetch_event(void)

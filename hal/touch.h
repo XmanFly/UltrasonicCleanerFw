@@ -10,9 +10,6 @@ extern "C" {
 /* Initialize capacitive-touch key */
 void     hal_touch_init(void);
 
-/* Rising-edge / falling-edge event (1 = one press detected) */
-u8  hal_touch_event(void);
-
 /* Realtime key level (1 = currently pressed) */
 u8  hal_touch_is_pressed(void);
 

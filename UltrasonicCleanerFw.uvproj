@@ -511,6 +511,16 @@
               <FileType>5</FileType>
               <FilePath>.\hal\ultrasonic.h</FilePath>
             </File>
+            <File>
+              <FileName>uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\uart_emb.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
