@@ -37,9 +37,13 @@ static void reload_t3(u16 val)
 void led_hw_init(void)
 {
     /* GPIO → 推挽 */
-    P1M0 |= P1_RED_MASK;   P1M1 &= ~P1_RED_MASK;
+    P1M0 |= P1_RED_MASK;   
+	P1M1 &= ~P1_RED_MASK;
     P3M0 |= (1<<P3_RED_BIT) | (1<<P3_BLUE_BIT);
     P3M1 &= ~((1<<P3_RED_BIT) | (1<<P3_BLUE_BIT));
+	
+	// P1 = ~P1_RED_MASK;   
+    
 
     /* Timer‑3 置 12 T (默认)  */
     /* 某些头文件需设置 T34TCL 寄存器对应位, 示范如下: */
