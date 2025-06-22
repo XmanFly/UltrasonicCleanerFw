@@ -50,15 +50,12 @@ void touch_service_tick_1ms(void)
         if(press_ms == 500) {
             evt_buf = TOUCH_EVT_PRESS_500;
             qtPrint("touch servce TOUCH_EVT_PRESS_500\r\n");
-                        hal_uart_send_buf("TOU");
         }
         if(press_ms == 2000) {
             evt_buf = TOUCH_EVT_PRESS_2S;
             qtPrint("touch servce TOUCH_EVT_PRESS_2S\r\n");
         }
     }
-
-    P11 = ~P11;
 }
 
 touch_evt_t touch_service_fetch_event(void)

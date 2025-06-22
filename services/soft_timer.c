@@ -1,5 +1,6 @@
 #include "services/soft_timer.h"
 #include "common/platform.h"
+#include <string.h>
 
 #define MAX_TMR 4
 
@@ -14,9 +15,15 @@ typedef struct
 /* large arrays stay in XDATA */
 static xdata tmr_t tbl[MAX_TMR];
 
+void timer_int()
+{
+    memset(tbl, 0, sizeof(tbl));
+}
+
 int timer_start(u32 ms, timer_cb_t cb, u8 rep)
 {
     int i;
+    qtPrint("timer_start interval %lu\r\n", ms);
 
     for(i = 0; i < MAX_TMR; i++) {
         if(tbl[i].cb == 0) {
@@ -56,6 +63,7 @@ void soft_timer_task(void)
 
     for(i = 0; i < MAX_TMR; i++) {
         if(tbl[i].cb && (tbl[i].cnt == 0)) {
+            qtPrint("soft_timer_task trigger period %lu\r\n", tbl[i].period);
             tmpCb = tbl[i].cb;
 
             if(tbl[i].rep) {

@@ -6,13 +6,18 @@
 #include "hal/led.h"
 #include "hal/ultrasonic.h"
 #include "hal/battery.h"
+#include "hal/uart.h"
+
+#ifdef __C51__
+#include "include/STC8H.h"
+#endif
 
 #define LOW_MV   2900 // 工作过程中低于此电压 蓝灯快闪
 #define LOW_HYST_MV  3000    /* 退出低电警告 (LOW_MV + 100 mV) */
 #define FULL_MV  4200
 #define CHARG_LOW_MV  2800 // 充电时 低于此电量 红灯快闪
 #define CHARG_MID_MV  3500 // 充电时 高于此电量 红灯正常闪烁
-#define CLEAN_MS 10000u // 清洗时间
+#define CLEAN_MS 3000u // 清洗时间
 
 typedef enum {
     OFF,
@@ -24,7 +29,7 @@ typedef enum {
     ABN
 } st_t;
 
-static st_t  st;
+static st_t  st = OFF;
 static int   t_clean = -1;
 static int   t_tmp   = -1;
 
@@ -50,6 +55,7 @@ void fsm_init(void)
     touch_service_init();
     led_hw_init();
     anim_init();
+    timer_int();
     led_hw_start(); /* 在第一次用灯效前一定初始化 */
     led_sm_init();
     enter(OFF);
@@ -58,12 +64,12 @@ void fsm_init(void)
 /* -------- state transition helper -------- */
 static void enter(st_t s)
 {
-#ifdef PLATFORM_QT
-    qtPrint("fsm enter %d\r\n", s);
+#ifdef PLATFORM_QT    
     if(user_cb) {
         user_cb(s);
     }
 #endif
+    qtPrint("fsm enter %bu\r\n", s);
 
     exit(st);          /* 离开旧状态 */
 
@@ -107,7 +113,7 @@ static void enter(st_t s)
  * ----------------------------------------------------------- */
 static void exit(st_t cur)
 {
-    qtPrint("fsm exit %d\r\n", cur);
+    qtPrint("fsm exit %bu\r\n", cur);
     switch(cur)
     {
     case WORK:
@@ -155,7 +161,11 @@ static void exit(st_t cur)
 void fsm_loop(void)
 {
 	touch_evt_t tev;
-	
+
+#ifdef __C51__
+    P11 = !P11;
+#endif
+
     soft_timer_task();
 
     /* fetch at most one touch event per loop */
@@ -165,12 +175,18 @@ void fsm_loop(void)
     {
     case OFF:
         if(tev == TOUCH_EVT_PRESS_500) {
+            qtPrint("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
             if(!hal_batt_is_chg()) {
+                qtPrint("fsm OFF: not in charge\r\n");
                 if(hal_batt_get_mv() > LOW_MV) {
+                    qtPrint("fsm OFF: mv ok\r\n");
                     enter(WORK);
                 } else {
+                    qtPrint("fsm OFF: mv low\r\n");
                     enter(LOW);
                 }
+            } else {
+                qtPrint("fsm OFF: in charge\r\n");
             }
         }
 

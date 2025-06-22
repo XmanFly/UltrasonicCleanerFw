@@ -14,7 +14,7 @@ void anim_set_callback(anim_cb_tb cb)
 /* 半余弦查表 (0…π)
  *  python:  round(sin(i*pi/127))*127.5) for i in 0..127
  */
-static xdata const u8 cos_lut[LUT_LEN] = {
+static code const u8 cos_lut[LUT_LEN] = {
     0,   3,   6,   9,  13,  16,  19,  22,  25,  28,  31,  34,  37,  40,  43,  46,
     49,  52,  55,  58,  61,  63,  66,  69,  71,  74,  76,  79,  81,  84,  86,  88,
     91,  93,  95,  97,  99, 101, 103, 105, 107, 108, 110, 111, 113, 114, 116, 117,

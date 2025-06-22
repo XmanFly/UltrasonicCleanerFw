@@ -14,7 +14,7 @@
 /* ======================================================= */
 
 /* 计算 7 段重装载值  (12 T → 1 µs / tick) */
-static const u16 reload_tbl[SEGMENTS] = {
+static code const u16 reload_tbl[SEGMENTS] = {
     65536 - (UNIT_TICKS << 0),   /*  79 */
     65536 - (UNIT_TICKS << 1),   /* 158 */
     65536 - (UNIT_TICKS << 2),   /* 316 */

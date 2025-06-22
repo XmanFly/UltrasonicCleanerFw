@@ -39,10 +39,11 @@ void hal_time_tick_1ms(void)
         slice2ms = 0;
         anim_tick_2ms();
     }
-    if(++slice1000ms >= 1000) {
-        slice1000ms = 0;
-        hal_uart_send_buf("hal");
-    }    
+	
+    // if(++slice1000ms >= 1000) {
+    //     slice1000ms = 0;
+    //     hal_uart_send_buf("hal");
+    // }    
 
 }
 #endif

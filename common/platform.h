@@ -10,6 +10,7 @@ extern "C" {
 
     #define INLINE static
     #define xdata
+    #define code
 
     /* 任意格式化输出 + 立即刷新 */
     #define qtPrint(fmt, ...)                                        \
@@ -21,6 +22,8 @@ extern "C" {
     #include "STC8H.h"
     void qtPrint(const char *fmt, ...);
 #endif
+
+#define C51_DEBUG_OUT
 
 #ifdef __cplusplus
 }   /* extern "C" */
