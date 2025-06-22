@@ -451,6 +451,31 @@
               <FileType>1</FileType>
               <FilePath>.\services\led_sm.c</FilePath>
             </File>
+            <File>
+              <FileName>soft_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\services\soft_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>soft_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\services\soft_pwm.h</FilePath>
+            </File>
+            <File>
+              <FileName>led_group.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\services\led_group.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_group.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\services\led_group.h</FilePath>
+            </File>
+            <File>
+              <FileName>led_sm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\services\led_sm.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -465,11 +490,6 @@
               <FileName>led_emb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\hal\embedded\led_emb.c</FilePath>
-            </File>
-            <File>
-              <FileName>led_red_soft_emb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\hal\embedded\led_red_soft_emb.c</FilePath>
             </File>
             <File>
               <FileName>time_emb.c</FileName>

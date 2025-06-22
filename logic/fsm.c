@@ -53,10 +53,8 @@ void fsm_init(void)
 {
     hal_batt_init();
     touch_service_init();
-    led_hw_init();
     anim_init();
     timer_int();
-    led_hw_start(); /* 在第一次用灯效前一定初始化 */
     led_sm_init();
     enter(OFF);
 }
@@ -89,11 +87,11 @@ static void enter(st_t s)
         break;
 
     case CHARGE_FULL:
-        led_sm_set(LED_CH_RED, LED_SM_ON, 10);
+        led_sm_breathe(LED_CH_BLUE, 1);
         break;
 
     case LOW:
-        led_sm_set(LED_CH_RED, LED_SM_BREATH, 100);
+        led_sm_breathe(LED_CH_RED, 1);
         t_tmp = timer_start(6000, to_off, 0);
         break;
 
@@ -120,25 +118,25 @@ static void exit(st_t cur)
         /* stop ultrasonic generator */
         hal_us_stop();
 
-        led_sm_set(LED_CH_BLUE, LED_SM_OFF, 0);
+        led_sm_breathe(LED_CH_BLUE, 1);
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
         break;
 
     case CHARGE:
-        led_sm_set(LED_CH_RED, LED_SM_OFF, 0);
+        led_sm_breathe(LED_CH_BLUE, 1);
 
         /* charging-done timer */
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
     case CHARGE_FULL:
-        led_sm_set(LED_CH_RED, LED_SM_OFF, 0);
+        led_sm_breathe(LED_CH_BLUE, 1);
         break;
 
     case LOW:
-        led_sm_set(LED_CH_RED, LED_SM_OFF, 0);
+        led_sm_breathe(LED_CH_BLUE, 1);
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
@@ -163,7 +161,7 @@ void fsm_loop(void)
 	touch_evt_t tev;
 
 #ifdef __C51__
-    P11 = !P11;
+   P11 = !P11;
 #endif
 
     soft_timer_task();
@@ -203,9 +201,9 @@ void fsm_loop(void)
 		{
 			u16 mv = hal_batt_get_mv();
 			if(mv < LOW_MV)
-				led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 100);
+				led_sm_breathe(LED_CH_BLUE, 1);
 			else if(mv > LOW_HYST_MV)
-				led_sm_set(LED_CH_BLUE, LED_SM_BREATH, 2000);
+				led_sm_breathe(LED_CH_BLUE, 1);
 		}
         break;
 
@@ -214,9 +212,9 @@ void fsm_loop(void)
 
     case CHARGE:
         if(hal_batt_get_mv() < CHARG_LOW_MV) {
-            led_sm_set(LED_CH_RED, LED_SM_BREATH, 100);
+            led_sm_breathe(LED_CH_RED, 1);
         } else if(hal_batt_get_mv() > CHARG_MID_MV) {
-            led_sm_set(LED_CH_RED, LED_SM_BREATH, 2000);
+            led_sm_breathe(LED_CH_RED, 1);
         }
 
         if(hal_batt_get_mv() >= FULL_MV)

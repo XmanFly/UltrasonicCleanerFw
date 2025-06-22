@@ -1,0 +1,22 @@
+{
+    "files.associations": {
+        "**/project.sigasi": "jsonc",
+        "**/.sigasi/**/compilation.log": "shellscript",
+        "**/.sigasi/**/compilation.plan": "json",
+        "touch.h": "c",
+        "touch_service.h": "c",
+        "fsm.h": "c",
+        "compare": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "xmemory": "c",
+        "xtr1common": "c",
+        "xutility": "c",
+        "intrins.h": "c",
+        "anim.h": "c",
+        "INTRINS.H": "cpp",
+        "stc8h.h": "c",
+        "led.h": "c"
+    }
+}

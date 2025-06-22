@@ -1,36 +1,31 @@
-#ifndef SERVICES_BLUE_LED_SM_H
-#define SERVICES_BLUE_LED_SM_H
-
+#ifndef LED_SM_H
+#define LED_SM_H
 #include "common/types.h"
+#include "led_group.h"          /* 分组底层 */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* -------- 组号保持旧名字 -------- */
+#define LED_CH_RED     0
+#define LED_CH_BLUE    1
+#define LED_CH_GREEN   2
+/* 若还有更多颜色，继续往下编号即可 */
 
-/* MCU/anim 通道映射 —— 根据项目实际定义 */
-#define LED_CH_RED    0
-#define LED_CH_BLUE   1
-#define LED_SM_CH_MAX 2          /* 若再加灯，只需调这个宏 */
+/* -------- 状态机支持的模式 -------- */
+typedef enum {
+    LS_MODE_OFF      = 0,
+    LS_MODE_CONST    = 1,
+    LS_MODE_BREATHE  = 2,
+    LS_MODE_BLINK    = 3
+} ls_mode_e;
 
-typedef enum
-{
-    LED_SM_OFF = 0,              /* 灭灯 */
-    LED_SM_ON,					 /* 常亮 */
-    LED_SM_BREATH,               /* 呼吸：period_ms 为完整往返 */
-} led_sm_mode_t;
+/* ---------- API ---------- */
+void led_sm_init(void);
 
-/* 初始化所有通道为 OFF */
-void  led_sm_init(void);
+void led_sm_off     (u8 ch);
+void led_sm_const   (u8 ch, u8 pct0_100);            /* 恒亮 0-100 %  */
+void led_sm_breathe (u8 ch, u8 speed_div);           /* 呼吸周期 ×div */
+void led_sm_blink   (u8 ch, u8 pct0_100,
+                     u16 on_ms, u16 off_ms);         /* 闪烁 */
 
-/* 切换通道模式
- *  ch         : 0..LED_SM_CH_MAX-1
- *  mode       : LED_SM_xxx
- *  period_ms  : 对 BREATH/FLASH 的周期，单位 ms；OFF 模式忽略
- */
-void  led_sm_set(u8 ch, led_sm_mode_t mode, u16 period_ms);
+void led_sm_tick_2ms(void);   /* 需在 2 ms 定时调度里调用 */
 
-#ifdef __cplusplus
-}   /* extern "C" */
-#endif
-
-#endif /* SERVICES_BLUE_LED_SM_H */
+#endif /* LED_SM_H */

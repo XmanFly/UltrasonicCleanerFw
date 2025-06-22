@@ -1,6 +1,6 @@
 /* 仅编进 Keil 工程；PC 侧不加入 */
 #include "platform.h"
-#include "types.h"
+#include "common/types.h"
 #include <stdarg.h>
 #include "hal/uart.h"
 

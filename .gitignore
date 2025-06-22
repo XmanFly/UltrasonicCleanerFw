@@ -27,6 +27,9 @@
 *.wrn
 *.log
 
+# vscode
+*.lock
+
 # —— 中间目录 ——
 /Objects/
 /Build/

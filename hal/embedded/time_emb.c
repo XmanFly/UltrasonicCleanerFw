@@ -3,6 +3,8 @@
 #include "hal/uart.h"
 #include "services/anim.h"
 #include "services/touch_service.h"
+#include "services/soft_pwm.h"
+#include "services/led_sm.h"
 
 #ifndef PLATFORM_QT
 #include "STC8H.h"
@@ -34,10 +36,12 @@ void hal_time_tick_1ms(void)
 	
     soft_timer_tick_1ms();
     touch_service_tick_1ms();
+	soft_pwm_tick_1ms();
 
     if(++slice2ms >= 2) {
         slice2ms = 0;
         anim_tick_2ms();
+		led_sm_tick_2ms();
     }
 	
     // if(++slice1000ms >= 1000) {

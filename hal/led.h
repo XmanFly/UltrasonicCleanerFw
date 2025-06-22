@@ -1,17 +1,9 @@
-#ifndef __HAL_LED_H__
-#define __HAL_LED_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#ifndef LED_PORT_H
+#define LED_PORT_H
 #include "common/types.h"
 
-void led_hw_init(void);   /* GPIO + Timer‑3 reload‑table 准备 */
-void led_hw_start(void);  /* 启动 Timer‑3 软‑PWM */
+/* 供 soft_pwm 调用的亮/灭操作（逻辑 LED 编号） */
+void led_on (u8 id);
+void led_off(u8 id);
 
-#ifdef __cplusplus
-}   /* extern "C" */
-#endif
-
-#endif
+#endif /* LED_PORT_H */

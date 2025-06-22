@@ -1,52 +1,107 @@
-#include "services/anim.h"
 #include "led_sm.h"
 
+/* ---------------- 内部状态 ---------------- */
 typedef struct {
-    u8         mode;        /* 当前模式 LED_SM_xxx                */
-    u16        period;      /* 当前周期 (ms) — 对 OFF 无意义       */
-} led_ctx_t;
+    u8  mode;      /* ls_mode_e */
+    u8  pct;       /* CONST / BLINK 亮度 % */
+    u8  div;       /* 呼吸分频             */
+    u16 on_tick;   /* BLINK 亮持续 (2 ms)  */
+    u16 off_tick;  /* BLINK 灭持续 (2 ms)  */
+    u16 cnt;
+    u8 blink_on;
+} sm_t;
 
-static led_ctx_t ctx[LED_SM_CH_MAX];
+static sm_t s[LED_GROUP_CNT];
 
-/* ----------------------------------------------------------- */
-void led_sm_init(void)
+/* ---------- 私有：把状态写到底层 ---------- */
+static void apply(u8 ch)
 {
-	u8 i;
-    for(i = 0; i < LED_SM_CH_MAX; ++i) {
-        ctx[i].mode   = LED_SM_OFF;
-        ctx[i].period = 0;
-        anim_set(i, ANIM_NONE, 0);
+    switch (s[ch].mode) {
+    case LS_MODE_OFF:
+        led_group_set_mode(ch, LG_MODE_OFF);
+        break;
+    case LS_MODE_CONST:
+        led_group_set_const(ch, s[ch].pct);
+        break;
+    case LS_MODE_BREATHE:
+        led_group_set_breathe(ch, s[ch].div);
+        break;
+    case LS_MODE_BLINK:
+        if (s[ch].blink_on) led_group_set_const(ch, s[ch].pct);
+        else                led_group_set_mode (ch, LG_MODE_OFF);
+        break;
     }
 }
 
-/* ----------------------------------------------------------- */
-void led_sm_set(u8 ch, led_sm_mode_t mode, u16 period_ms)
-{	
-	led_ctx_t *c = &ctx[ch];
-	
-    if(ch >= LED_SM_CH_MAX) return;
+/* ---------- 公共 API ---------- */
+void led_sm_init(void)
+{
+    u8 i;
+    led_group_init();                     /* 底层初始化 */
 
-    /* 若模式和周期均未改变 → 直接返回，避免多余调用 */
-    if(mode == c->mode && (mode == LED_SM_OFF || period_ms == c->period))
-        return;
-
-    switch(mode)
-    {
-    case LED_SM_OFF:
-        anim_set(ch, ANIM_NONE, 0);
-        break;
-    case LED_SM_BREATH:
-        /* 若以前已是 BREATH，则用 update 无闪烁更改周期 */
-        if(c->mode == LED_SM_BREATH)
-            anim_update_period(ch, period_ms);
-        else
-            anim_set(ch, ANIM_BREATH, period_ms);
-        break;
-    case LED_SM_ON:
-        anim_set(ch, ANIM_CONST, 0);
-        break;
+    for (i = 0; i < LED_GROUP_CNT; ++i) {
+        s[i].mode = LS_MODE_OFF;
+        s[i].pct  = 0;
+        s[i].div  = 1;
+        s[i].on_tick  = 0;
+        s[i].off_tick = 0;
+        s[i].cnt      = 0;
+        s[i].blink_on = 0;
+        apply(i);
     }
+}
 
-    c->mode   = (u8)mode;
-    c->period = period_ms;
+void led_sm_off(u8 ch)
+{
+    if (ch >= LED_GROUP_CNT) return;
+    s[ch].mode = LS_MODE_OFF;
+    apply(ch);
+}
+
+void led_sm_const(u8 ch, u8 pct)
+{
+    if (ch >= LED_GROUP_CNT) return;
+    if (pct > 100) pct = 100;
+    s[ch].mode = LS_MODE_CONST;
+    s[ch].pct  = pct;
+    apply(ch);
+}
+
+void led_sm_breathe(u8 ch, u8 div)
+{
+    if (ch >= LED_GROUP_CNT || div == 0) return;
+    s[ch].mode = LS_MODE_BREATHE;
+    s[ch].div  = div;
+    if (s[ch].pct == 0) s[ch].pct = 100;      /* 默认峰值 */
+    apply(ch);
+}
+
+void led_sm_blink(u8 ch, u8 pct, u16 on_ms, u16 off_ms)
+{
+    if (ch >= LED_GROUP_CNT || on_ms == 0 || off_ms == 0) return;
+    if (pct > 100) pct = 100;
+
+    s[ch].mode      = LS_MODE_BLINK;
+    s[ch].pct       = pct;
+    s[ch].on_tick   = on_ms  / 2;   /* 2 ms 一个 tick */
+    s[ch].off_tick  = off_ms / 2;
+    s[ch].cnt       = s[ch].on_tick;
+    s[ch].blink_on  = 1;
+    apply(ch);
+}
+
+void led_sm_tick_2ms(void)
+{
+    u8 i;
+    for (i = 0; i < LED_GROUP_CNT; ++i) {
+        if (s[i].mode == LS_MODE_BLINK) {
+            if (--s[i].cnt == 0) {
+                s[i].blink_on = !s[i].blink_on;
+                s[i].cnt = s[i].blink_on ? s[i].on_tick
+                                         : s[i].off_tick;
+                apply(i);
+            }
+        }
+    }
+    led_group_tick_2ms();    /* 更新呼吸曲线 */
 }

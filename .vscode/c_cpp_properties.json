@@ -1,0 +1,48 @@
+{
+    "configurations": [
+        {
+            "name": "STC8H1K08",
+            "includePath": [
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\include",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\app",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\bsp",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\drivers",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\drivers\\led",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\services",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\services\\anim",
+                "C:\\Keil_v5\\C51\\INC",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\common",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\hal\\embedded",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\hal",
+                "d:\\MC\\UltrasonicCleaner\\UltrasonicCleaner\\logic"
+            ],
+            "defines": [
+                "__C51__",
+                "__VSCODE_C51__",
+                "reentrant=",
+                "compact=",
+                "small=",
+                "large=",
+                "data=",
+                "idata=",
+                "pdata=",
+                "bdata=",
+                "xdata=",
+                "code=",
+                "bit=char",
+                "sbit=char",
+                "sfr=char",
+                "sfr16=int",
+                "sfr32=int",
+                "interrupt=",
+                "using=",
+                "_at_=",
+                "_priority_=",
+                "_task_="
+            ],
+            "intelliSenseMode": "${default}"
+        }
+    ],
+    "version": 4
+}
