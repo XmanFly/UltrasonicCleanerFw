@@ -11,7 +11,6 @@ extern "C" {
 /* -------- 组号保持旧名字 -------- */
 #define LED_CH_RED     0
 #define LED_CH_BLUE    1
-#define LED_CH_GREEN   2
 /* 若还有更多颜色，继续往下编号即可 */
 
 /* -------- 状态机支持的模式 -------- */

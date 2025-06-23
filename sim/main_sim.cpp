@@ -15,9 +15,12 @@
 #include "hal/battery.h"
 #include "hal/touch.h"
 #include "hal/time.h"
+#include "hal/led.h"
 #include "services/soft_timer.h"
 #include "sim/simviewmodel.h"
 #include "sim/timerworker.h"
+#include "sim/datalogger.h"
+#include "sim/waveemitter.h"
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -39,7 +42,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     fflush(stdout);
 }
 
-void fwInit(QObject *parent, SimViewModel *simViewModel)
+void fwInit(QObject *parent, SimViewModel *simViewModel, WaveEmitter *waveEmitter)
 {
     hal_time_init();
     fsm_init();
@@ -47,6 +50,8 @@ void fwInit(QObject *parent, SimViewModel *simViewModel)
     // 注册回调
     hal_us_set_callback(simViewModel->onHalUsCallback);
     fsm_set_callback(simViewModel->onEnterFsmStateCallback);
+    led_set_callback(waveEmitter->onEmitIO);
+
 
     QTimer *loopTimer = new QTimer(parent);
     loopTimer->callOnTimeout([](){
@@ -82,7 +87,25 @@ int main(int argc, char *argv[])
                                       "qt.quick.tableview.*=true");
 
     SimViewModel simViewModel;
-    fwInit(&app, &simViewModel);
+
+    // 创建专门的日志线程
+    QThread *loggerThread = new QThread;
+    DataLogger *logger = new DataLogger(QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss-zzz")+".csv");
+    logger->moveToThread(loggerThread);
+
+    // 启动线程后开始接收（在新线程中运行 onDataReceived）
+    QObject::connect(loggerThread, &QThread::started, [](){
+    });
+
+    WaveEmitter waveEmitter;
+    QObject::connect(&waveEmitter, &WaveEmitter::ioChanged,
+                     logger, &DataLogger::onDataReceived,
+                     Qt::QueuedConnection);
+
+    loggerThread->start();
+
+    fwInit(&app, &simViewModel, &waveEmitter);
+
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("SimViewModel", &simViewModel);

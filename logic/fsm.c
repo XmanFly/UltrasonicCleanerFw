@@ -74,10 +74,14 @@ static void enter(st_t s)
     switch(s)
     {
     case OFF:
+//        led_sm_off(LED_CH_RED);
+//        led_sm_const(LED_CH_RED, 50);
+        led_sm_breathe(LED_CH_RED, 20);
         break;
 
     case WORK:
         hal_us_start();
+        led_sm_const(LED_CH_BLUE, 100);
         t_clean = timer_start(CLEAN_MS, clean_done, 0);
         break;
 
@@ -159,7 +163,7 @@ void fsm_loop(void)
 	touch_evt_t tev;
 
 #ifdef __C51__
-   P11 = !P11;
+//    P11 = !P11;
 #endif
 
     soft_timer_task();

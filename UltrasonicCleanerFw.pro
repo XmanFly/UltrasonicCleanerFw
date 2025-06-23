@@ -19,8 +19,10 @@ SOURCES += \
     services/soft_timer.c \
     logic/fsm.c \
     services/touch_service.c \
+    sim/datalogger.cpp \
     sim/main_sim.cpp \
-    sim/simviewmodel.cpp
+    sim/simviewmodel.cpp \
+    sim/waveemitter.cpp
 
 HEADERS += \
     common/platform.h \
@@ -37,8 +39,10 @@ HEADERS += \
     services/soft_pwm.h \
     services/soft_timer.h \
     services/touch_service.h \
+    sim/datalogger.h \
     sim/simviewmodel.h \
-    sim/timerworker.h
+    sim/timerworker.h \
+    sim/waveemitter.h
 
 
 RESOURCES += qt/qml/qml.qrc

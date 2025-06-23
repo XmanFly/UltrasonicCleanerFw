@@ -1,5 +1,7 @@
 #include "led_group.h"
 #include "soft_pwm.h"
+#include "common/platform.h"
+#include "hal/led.h"
 
 /* √4-bit 半正弦 + γ≈sqrt  LUT */
 static code const u8 lut[64] = {
@@ -10,7 +12,7 @@ static code const u8 lut[64] = {
 };
 
 /* ------- 默认 IO & 数量表（可改硬件后一起修改） ------- */
-const u8 led_group_size[LED_GROUP_CNT] = {10,10};
+const u8 led_group_size[LED_GROUP_CNT] = {LED_RED_GROUP_CNT};
 /* ---------------------------------------------------- */
 
 typedef struct {
@@ -38,7 +40,7 @@ static void put_lvl(u8 grp, u8 lv4)
     u8 base = grp_base(grp);
     u8 cnt  = led_group_size[grp];
     u8 duty = (u8)(lv4 << 3);           /* ×8 */
-
+    qtPrint("put_lvl grp %bu cnt %bu lv4 %bu du %bu\n", grp, cnt, lv4, duty);
     while (cnt--) {
         soft_pwm_set_level(base + cnt, duty);
     }
@@ -48,6 +50,7 @@ static void put_lvl(u8 grp, u8 lv4)
 void led_group_init(void)
 {
     u8 i;
+    led_init();
     soft_pwm_init();
     for (i = 0; i < LED_GROUP_CNT; ++i) {
         g[i].mode = LG_MODE_OFF;
@@ -82,16 +85,21 @@ void led_group_set_breathe(u8 grp, u8 div)
 void led_group_tick_2ms(void)
 {
     u8 i;
+    qtPrint("led_group_tick_2ms beingin\n");
     for (i = 0; i < LED_GROUP_CNT; ++i) {
+        // qtPrint("led_group_tick_2ms %bu\n", i);
         switch (g[i].mode) {
 
         case LG_MODE_OFF:
+            qtPrint("LG_MODE_OFF %bu\n", i);
             put_lvl(i, 0);
+            qtPrint("LG_MODE_OFF end\n");
             break;
 
-        case LG_MODE_CONST: {
+        case LG_MODE_CONST: {            
             u8 duty = (u16)g[i].pct * 127u / 100u;   /* 0-127 */
             put_lvl(i, duty >> 3);                   /* 转 4-bit */
+            // qtPrint("LG_MODE_CONST %bu\n", i);
             break;
         }
 
@@ -100,8 +108,12 @@ void led_group_tick_2ms(void)
                 g[i].cnt = 0;
                 if (++g[i].idx >= 64) g[i].idx = 0;
             }
+            
+            // qtPrint("LG_MODE_BREATHE %bu %bu %bu\n", i, g[i].idx, lut[g[i].idx]);
             put_lvl(i, lut[g[i].idx]);
+            qtPrint("LG_MODE_BREATHE end\n");
             break;
         }
     }
+    qtPrint("led_group_tick_2ms end\n\n\n");
 }

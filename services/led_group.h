@@ -9,15 +9,16 @@ extern "C" {
 
 /* ----------（可根据硬件修改）---------- */
 /* 1) 组数 */
-#define LED_GROUP_CNT          2           /* 红、蓝 */
+#define LED_GROUP_CNT          1           /* 红、蓝 */
 
 /* 2) 每组最大灯数（所有组共用同一上限） */
-#define LED_PER_GROUP_MAX     10
+#define LED_RED_GROUP_CNT        6           /* 红灯组内灯个数 */
+#define LED_BLUE_GROUP_CNT       0           /* 蓝灯组内灯个数 */
 
 /* 3) 每只 LED 连接的物理 IO（线性编号 0..TOTAL-1）
  *    超出实际数量用 0xFF 占位。示例：红灯 0~9→P10~P19 ……
  */
-#define LED_TOTAL   (LED_GROUP_CNT * LED_PER_GROUP_MAX)
+#define LED_TOTAL   (LED_RED_GROUP_CNT + LED_BLUE_GROUP_CNT)
 /* 每路 LED 对应一个端口地址和一个位掩码 */
 typedef struct {
     u8 port_no;   /* 1 = P1, 2 = P2, … */
