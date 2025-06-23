@@ -1,6 +1,5 @@
 #include "logic/fsm.h"
 #include "services/soft_timer.h"
-#include "services/anim.h"
 #include "services/touch_service.h"
 #include "services/led_sm.h"
 #include "hal/led.h"
@@ -53,7 +52,6 @@ void fsm_init(void)
 {
     hal_batt_init();
     touch_service_init();
-    anim_init();
     timer_int();
     led_sm_init();
     enter(OFF);

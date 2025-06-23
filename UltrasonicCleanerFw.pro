@@ -13,9 +13,10 @@ SOURCES += \
     hal/sim/batt_sim.c \
     hal/sim/touch_sim.c \
     hal/sim/time_sim.c \
+    services/led_group.c \
     services/led_sm.c \
+    services/soft_pwm.c \
     services/soft_timer.c \
-    services/anim.c \
     logic/fsm.c \
     services/touch_service.c \
     sim/main_sim.cpp \
@@ -31,8 +32,9 @@ HEADERS += \
     hal/ultrasonic.h \
     include/stdbool.h \
     logic/fsm.h \
-    services/anim.h \
+    services/led_group.h \
     services/led_sm.h \
+    services/soft_pwm.h \
     services/soft_timer.h \
     services/touch_service.h \
     sim/simviewmodel.h \

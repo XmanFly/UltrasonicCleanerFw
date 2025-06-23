@@ -1,10 +1,15 @@
 #ifndef LED_GROUP_H
 #define LED_GROUP_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "common/types.h"
 
 /* ----------（可根据硬件修改）---------- */
 /* 1) 组数 */
-#define LED_GROUP_CNT          3           /* 红、蓝、绿 */
+#define LED_GROUP_CNT          2           /* 红、蓝 */
 
 /* 2) 每组最大灯数（所有组共用同一上限） */
 #define LED_PER_GROUP_MAX     10
@@ -34,5 +39,9 @@ void led_group_set_const  (u8 grp, u8 pct0_100);      /* 恒亮 %  */
 void led_group_set_breathe(u8 grp, u8 speed_div);     /* 1=128 ms */
 
 void led_group_tick_2ms(void);   /* 需在 2 ms 节拍里调用 */
+
+#ifdef __cplusplus
+}   /* extern "C" */
+#endif
 
 #endif /* LED_GROUP_H */

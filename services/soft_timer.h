@@ -1,10 +1,11 @@
 #ifndef __SOFT_TIMER_H__
 #define __SOFT_TIMER_H__
-#include "common/types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "common/types.h"
 
 typedef void (*timer_cb_t)(void);
 

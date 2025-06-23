@@ -1,5 +1,10 @@
 #ifndef SOFT_PWM_H
 #define SOFT_PWM_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "common/types.h"
 #include "led_group.h"        /* 为获取 LED_TOTAL 宏 */
 
@@ -11,7 +16,11 @@ void soft_pwm_init(void);
 void soft_pwm_set_level(u8 id, u8 level_0_127);   /* 任意占空 */
 void soft_pwm_tick_1ms(void);                     /* 1 ms 调用 */
 
-/* 给 anim / led_group 用的 4-bit 封装 */
+/* 给 led_group 用的 4-bit 封装 */
 void led_set_level(u8 id, u8 lv_0_15);
+
+#ifdef __cplusplus
+}   /* extern "C" */
+#endif
 
 #endif /* SOFT_PWM_H */

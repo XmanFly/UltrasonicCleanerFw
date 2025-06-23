@@ -22,4 +22,5 @@ void hal_touch_sim_set(u8 level);   /* 0 = up , 1 = down (edge auto) */
 #ifdef __cplusplus
 }
 #endif
+
 #endif   /* __HAL_TOUCH_H__ */

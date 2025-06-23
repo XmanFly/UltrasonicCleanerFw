@@ -2,12 +2,12 @@
 
 #ifdef PLATFORM_QT
 
-void led_hw_init(void)
+void led_on (u8 id)
 {
 
 }
 
-void led_hw_start(void)
+void led_off(u8 id)
 {
 
 }

@@ -1,6 +1,10 @@
 #ifndef __TOUCH_SERVICE_H__
 #define __TOUCH_SERVICE_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "common/types.h"
 
 /* semantic events delivered to upper layer */
@@ -23,5 +27,9 @@ touch_evt_t touch_service_fetch_event(void);
 
 /* current stable press duration (ms); 0 if key released */
 u16 touch_service_press_ms(void);
+
+#ifdef __cplusplus
+}   /* extern "C" */
+#endif
 
 #endif  /* __TOUCH_SERVICE_H__ */

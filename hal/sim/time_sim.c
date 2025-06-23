@@ -1,6 +1,6 @@
 #include "hal/time.h"
 #include "services/soft_timer.h"
-#include "services/anim.h"
+#include "services/led_group.h"
 #include "touch_service.h"
 
 #ifdef PLATFORM_QT
@@ -18,7 +18,7 @@ void hal_time_tick_1ms(void)
     static u8 slice2ms = 0;
     if(++slice2ms >= 2) {
         slice2ms = 0;
-        anim_tick_2ms();
+        led_group_tick_2ms();
     }
 }
 #endif

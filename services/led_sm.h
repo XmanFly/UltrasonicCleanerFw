@@ -1,5 +1,10 @@
 #ifndef LED_SM_H
 #define LED_SM_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "common/types.h"
 #include "led_group.h"          /* 分组底层 */
 
@@ -27,5 +32,9 @@ void led_sm_blink   (u8 ch, u8 pct0_100,
                      u16 on_ms, u16 off_ms);         /* 闪烁 */
 
 void led_sm_tick_2ms(void);   /* 需在 2 ms 定时调度里调用 */
+
+#ifdef __cplusplus
+}   /* extern "C" */
+#endif
 
 #endif /* LED_SM_H */

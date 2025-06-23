@@ -1,6 +1,7 @@
 #include "led_group.h"
 #include "soft_pwm.h"
 
+/* √4-bit 半正弦 + γ≈sqrt  LUT */
 static const u8 lut[64] = {
       0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,
       7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,
@@ -18,12 +19,12 @@ const u8 led_group_size[LED_GROUP_CNT] = {10,10,10};
 /* ---------------------------------------------------- */
 
 typedef struct {
-    u8 mode;          /* lg_mode_e */
+    lg_mode_e mode;          /* lg_mode_e */
     u8 pct;           /* 恒亮 0-100 */
     u8 div;           /* 呼吸分频 ≥1 */
     /* runtime */
-    u8 idx;
-    u8 cnt;
+    u8 cnt; // 分频计数
+    u8 idx; // 分频后计数
 } grp_t;
 
 static grp_t g[LED_GROUP_CNT];
@@ -87,7 +88,6 @@ void led_group_tick_2ms(void)
 {
     u8 i;
     for (i = 0; i < LED_GROUP_CNT; ++i) {
-
         switch (g[i].mode) {
 
         case LG_MODE_OFF:
