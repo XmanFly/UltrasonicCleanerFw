@@ -2,7 +2,6 @@
 #include "hal/uart.h"
 #include "logic/fsm.h"
 #include "services/soft_pwm.h"
-#include "services/anim.h"
 #include "hal/led.h"
 #include "STC8H.h"
 

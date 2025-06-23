@@ -18,7 +18,12 @@ extern "C" {
  *    超出实际数量用 0xFF 占位。示例：红灯 0~9→P10~P19 ……
  */
 #define LED_TOTAL   (LED_GROUP_CNT * LED_PER_GROUP_MAX)
-extern const u8 led_io_map[LED_TOTAL];
+/* 每路 LED 对应一个端口地址和一个位掩码 */
+typedef struct {
+    u8 port_no;   /* 1 = P1, 2 = P2, … */
+    u8           mask;   /* 对应位：1<<0、1<<1… */
+} LedIo_t;	
+extern const LedIo_t led_io_map[LED_TOTAL];
 
 /* 4) 各组实际灯数 */
 extern const u8 led_group_size[LED_GROUP_CNT];

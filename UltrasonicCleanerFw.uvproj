@@ -417,19 +417,9 @@
           <GroupName>services</GroupName>
           <Files>
             <File>
-              <FileName>anim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\services\anim.c</FilePath>
-            </File>
-            <File>
               <FileName>soft_timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\services\soft_timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>anim.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\services\anim.h</FilePath>
             </File>
             <File>
               <FileName>soft_timer.h</FileName>

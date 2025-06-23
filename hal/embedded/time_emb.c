@@ -1,7 +1,6 @@
 #include "hal/time.h"
 #include "common/types.h"
 #include "hal/uart.h"
-#include "services/anim.h"
 #include "services/touch_service.h"
 #include "services/soft_pwm.h"
 #include "services/led_sm.h"
@@ -40,7 +39,6 @@ void hal_time_tick_1ms(void)
 
     if(++slice2ms >= 2) {
         slice2ms = 0;
-        anim_tick_2ms();
 		led_sm_tick_2ms();
     }
 	
