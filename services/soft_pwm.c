@@ -28,6 +28,7 @@ void soft_pwm_set_level(u8 id, u8 lv)
         if (lv > LED_LEVEL_MAX) lv = LED_LEVEL_MAX;
         led[id].target = lv;
     }
+    // print("soft_pwm_set_level id %bu lv %bu\n", id, lv);
 }
 
 void soft_pwm_tick_1ms(void)

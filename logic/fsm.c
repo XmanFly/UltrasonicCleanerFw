@@ -16,7 +16,7 @@
 #define FULL_MV  4200
 #define CHARG_LOW_MV  2800 // 充电时 低于此电量 红灯快闪
 #define CHARG_MID_MV  3500 // 充电时 高于此电量 红灯正常闪烁
-#define CLEAN_MS 3000u // 清洗时间
+#define CLEAN_MS 30000u // 清洗时间
 
 typedef enum {
     OFF,
@@ -78,7 +78,8 @@ static void enter(st_t s)
         led_sm_off(LED_CH_RED);
         led_sm_off(LED_CH_BLUE);
     //    led_sm_const(LED_CH_RED, 50);
-    //    led_sm_breathe(LED_CH_RED, 1);
+    //   led_sm_breathe(LED_CH_RED, 24);
+    // led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
         break;
 
     case WORK:

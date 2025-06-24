@@ -31,7 +31,7 @@ static grp_t g[LED_GROUP_CNT];
 /* -- 工具：获取组内 LED 起始线性索引 -- */
 static u8 grp_base(u8 grp)
 {
-    u8 base = 0, i;
+    volatile base = 0, i;
     for (i = 0; i < grp; ++i) base += led_group_size[i];
     return base;
 }
@@ -45,12 +45,12 @@ static void put_lvl(u8 grp, u8 lv4)
     u8 duty = (u8)(lv4_backup << 3);           /* ×8 */
     u8 base = grp_base(grp_backup);
     u8 cnt  = led_group_size[grp_backup];
-    
-    // print("put_lvl id %bu duty %bu\n", grp_backup, lv4_backup);
 
     while (cnt--) {
         soft_pwm_set_level(base + cnt, duty);
     }
+    
+    // print("put_lvl id %bu duty %bu base %bu cnt %bu\n", grp_backup, lv4_backup, base, cnt);
 }
 
 /* ========== API 实现 ========== */

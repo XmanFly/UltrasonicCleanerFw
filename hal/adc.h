@@ -6,6 +6,10 @@
 #ifndef _ADC_H_
 #define _ADC_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "common/types.h"
 
 /* 初始化：开启 ADC，配置为 10-bit、单端、Fadc = Fosc / 6
@@ -18,5 +22,9 @@ void ADC_SetChannel(u8 ch);
 
 /* 启动一次转换并阻塞等待结束，返回 0-1023 原始值 */
 u16  ADC_RunOnce(void);
+
+#ifdef __cplusplus
+}   /* extern "C" */
+#endif
 
 #endif  /* _ADC_H_ */

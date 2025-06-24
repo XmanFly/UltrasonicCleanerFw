@@ -34,10 +34,12 @@ void hal_time_tick_1ms(void)
 	static u8 slice2ms = 0;	
     static u16 slice1000ms = 0;	
 	
+
+    P11 = 1;
+    hal_us_tick_1ms();        /* 推进扫频状态机 */
     soft_timer_tick_1ms();
     touch_service_tick_1ms();
-	soft_pwm_tick_1ms();
-    hal_us_tick_1ms();        /* 推进扫频状态机 */
+	soft_pwm_tick_1ms();    
 
     if(++slice2ms >= 2) {
         slice2ms = 0;
@@ -48,6 +50,6 @@ void hal_time_tick_1ms(void)
     //     slice1000ms = 0;
     //     hal_uart_send_buf("hal");
     // }    
-
+    P11 = 0;
 }
 #endif

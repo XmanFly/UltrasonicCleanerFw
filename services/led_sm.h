@@ -13,7 +13,7 @@ extern "C" {
 #define LED_CH_BLUE    1
 
 /* -------- 几种呼吸频率参数 -------- */
-#define BREATH_NORMAL    10
+#define BREATH_NORMAL    24
 #define BREATH_FAST		 1
 
 /* -------- 状态机支持的模式 -------- */

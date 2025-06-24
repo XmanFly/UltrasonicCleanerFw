@@ -15,7 +15,6 @@ void led_init()
 {
     P1M0 = 0xff; 
     P1M1 = 0x00; 
-    P13 = 0;
 }
 
 void hal_led_set(u8 id, u8 level)
@@ -25,7 +24,7 @@ void hal_led_set(u8 id, u8 level)
 	p = led_io_map[id].port_no;
 	m = led_io_map[id].mask;	
 
-    print("hal_led_set id %bu level %bu\n", id, level);
+//    print("hal_led_set id %bu level %bu\n", id, level);
 
     switch (p)
     {

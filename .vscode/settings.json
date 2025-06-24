@@ -24,6 +24,8 @@
         "ultrasonic.h": "c",
         "soft_pwm.h": "c",
         "types.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "adc.h": "c",
+        "battery.h": "c"
     }
 }

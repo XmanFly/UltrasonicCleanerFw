@@ -55,7 +55,8 @@ void hal_battery_task(void)
 
 u16 hal_battery_get_mv(void)
 {
-    return batt_mV;
+    return 5000;
+    //return batt_mV;
 }
 
 u8 hal_battery_get_percent(void)
@@ -65,7 +66,7 @@ u8 hal_battery_get_percent(void)
     return (u8)((batt_mV - 3300u) / 9u);  /* 900 mV /100 ≈ 9 mV/格 */
 }
 
-u8 hal_batt_is_chg(void)
+u8 hal_battery_is_chg(void)
 {
 	return 0;
 }
