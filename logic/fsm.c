@@ -51,7 +51,6 @@ void fsm_set_callback(fsm_cb_tb cb)
 void fsm_init(void)
 {
     led_sm_init();
-    hal_batt_init();
     touch_service_init();
     timer_int();
     enter(OFF);
@@ -178,7 +177,7 @@ void fsm_loop(void)
             print("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
             if(!hal_batt_is_chg()) {
                 print("fsm OFF: not in charge\r\n");
-                if(hal_batt_get_mv() > LOW_MV) {
+                if(hal_battery_get_mv() > LOW_MV) {
                     print("fsm OFF: mv ok\r\n");
                     enter(WORK);
                 } else {
@@ -201,7 +200,7 @@ void fsm_loop(void)
             enter(FINISH);
         }
 		{
-			u16 mv = hal_batt_get_mv();
+			u16 mv = hal_battery_get_mv();
 			// if(mv < LOW_MV)
 			// 	// led_sm_breathe(LED_CH_BLUE, 1);
 			// else if(mv > LOW_HYST_MV)
@@ -213,13 +212,13 @@ void fsm_loop(void)
         break;
 
     case CHARGE:
-        if(hal_batt_get_mv() < CHARG_LOW_MV) {
+        if(hal_battery_get_mv() < CHARG_LOW_MV) {
             led_sm_breathe(LED_CH_RED, 1);
-        } else if(hal_batt_get_mv() > CHARG_MID_MV) {
+        } else if(hal_battery_get_mv() > CHARG_MID_MV) {
             led_sm_breathe(LED_CH_RED, 1);
         }
 
-        if(hal_batt_get_mv() >= FULL_MV)
+        if(hal_battery_get_mv() >= FULL_MV)
         {
             enter(CHARGE_FULL);
         }

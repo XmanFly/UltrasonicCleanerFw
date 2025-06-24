@@ -374,12 +374,22 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>Source Group</GroupName>
+          <GroupName>startup</GroupName>
           <Files>
             <File>
               <FileName>STARTUP.A51</FileName>
               <FileType>2</FileType>
               <FilePath>.\STARTUP.A51</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>include</GroupName>
+          <Files>
+            <File>
+              <FileName>STC8H.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\include\STC8H.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -530,6 +540,16 @@
               <FileName>uart_emb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\hal\embedded\uart_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\adc.h</FilePath>
+            </File>
+            <File>
+              <FileName>adc_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\adc_emb.c</FilePath>
             </File>
           </Files>
         </Group>
