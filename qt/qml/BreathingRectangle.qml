@@ -21,11 +21,15 @@ Item {
 
     // 呼吸周期（ms）
     property int breathDuration: 200
+    property int realBreathDuration: breathDuration * 128 // 传入的是呼吸灯分频因子，故这里乘上一个系数
     onBreathDurationChanged: {
-        console.log("duration " + breathDuration)
+        console.log("duration " + realBreathDuration)
     }
 
     property int ledState: 0 // 同步anim_type_t
+    onLedStateChanged: {
+        console.log("led state " + ledState)
+    }
 
 
     // 透明度范围
@@ -48,26 +52,38 @@ Item {
         // 透明度动画
         SequentialAnimation {
             id: breathAnim
-            running: ledState === 1
+//            running: ledState === 2
             loops: Animation.Infinite
             NumberAnimation {
                 target: rect; property: "opacity"
                 from: minOpacity;
                 to: maxOpacity;
-                duration: breathDuration/2;
+                duration: realBreathDuration/2;
                 easing.type: Easing.InOutQuad
                 onDurationChanged: {
-                    breathAnim.restart()
+                    if( ledState === 2) {
+                        console.log("start 1st half")
+                        breathAnim.restart()
+                    } else {
+                        console.log("stop 1st half")
+                        breathAnim.stop()
+                    }
                 }
             }
             NumberAnimation {
                 target: rect; property: "opacity"
                 from: maxOpacity;
                 to: minOpacity;
-                duration: breathDuration/2;
+                duration: realBreathDuration/2;
                 easing.type: Easing.InOutQuad
                 onDurationChanged: {
-                    breathAnim.restart()
+                    if( ledState === 2) {
+                        console.log("start 2nd half")
+                        breathAnim.restart()
+                    } else {
+                        console.log("stop 2nd half")
+                        breathAnim.stop()
+                    }
                 }
             }
             onStopped: {

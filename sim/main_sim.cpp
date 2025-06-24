@@ -11,6 +11,7 @@
 #include "common/platform.h"
 #include "hal/led.h"
 #include "hal/ultrasonic.h"
+#include "led_sm.h"
 #include "logic/fsm.h"
 #include "hal/battery.h"
 #include "hal/touch.h"
@@ -50,6 +51,7 @@ void fwInit(QObject *parent, SimViewModel *simViewModel, WaveEmitter *waveEmitte
     // 注册回调
     hal_us_set_callback(simViewModel->onHalUsCallback);
     fsm_set_callback(simViewModel->onEnterFsmStateCallback);
+    led_sm_set_callback(simViewModel->onSetLedCallback);
     led_set_callback(waveEmitter->onEmitIO);
 
 

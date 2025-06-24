@@ -11,7 +11,10 @@ extern "C" {
 /* -------- 组号保持旧名字 -------- */
 #define LED_CH_RED     0
 #define LED_CH_BLUE    1
-/* 若还有更多颜色，继续往下编号即可 */
+
+/* -------- 几种呼吸频率参数 -------- */
+#define BREATH_NORMAL    10
+#define BREATH_FAST		 1
 
 /* -------- 状态机支持的模式 -------- */
 typedef enum {
@@ -26,11 +29,16 @@ void led_sm_init(void);
 
 void led_sm_off     (u8 ch);
 void led_sm_const   (u8 ch, u8 pct0_100);            /* 恒亮 0-100 %  */
-void led_sm_breathe (u8 ch, u8 speed_div);           /* 呼吸周期 ×div */
+void led_sm_breathe (u8 ch, u8 speed_div);           /* 呼吸周期 分频系数 */
 void led_sm_blink   (u8 ch, u8 pct0_100,
                      u16 on_ms, u16 off_ms);         /* 闪烁 */
 
 void led_sm_tick_2ms(void);   /* 需在 2 ms 定时调度里调用 */
+
+#ifdef PLATFORM_QT
+typedef void (*led_sm_cb_tb)(u8 ch, u8 mode, u8 speed);
+void led_sm_set_callback(led_sm_cb_tb cb);
+#endif
 
 #ifdef __cplusplus
 }   /* extern "C" */

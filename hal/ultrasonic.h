@@ -1,6 +1,12 @@
 #ifndef _HAL_US_H_
 #define _HAL_US_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "common/types.h"
+
 /* ---------- 配置宏 ---------- */
 #define HAL_US_FOSC_HZ          11059200UL   /* 晶振频率 Hz (11.0592 MHz) */
 #define HAL_US_F_MIN_KHZ        138u         /* 扫频下限 kHz              */
@@ -22,5 +28,15 @@ void hal_us_stop(void);
 
 /* 在现有 1 ms Tick 中断里调用，负责推进扫频 */
 void hal_us_tick_1ms(void);
+
+#ifdef PLATFORM_QT
+u8 sim_us_on(void);
+typedef void (*hal_us_cb_tb)(u8 on);
+void hal_us_set_callback(hal_us_cb_tb cb);
+#endif
+
+#ifdef __cplusplus
+}   /* extern "C" */
+#endif
 
 #endif

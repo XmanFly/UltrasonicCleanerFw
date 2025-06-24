@@ -46,9 +46,9 @@ public:
 private:
     bool m_adapterConnected = false; // 适配器连接
     float m_batQuatity = 0; // 电池电量
-    int m_blueLedState = 0; // 蓝灯状态 同步anim_type_t
+    int m_blueLedState = 0; // 蓝灯状态 同步ls_mode_e
     int m_blueLedSpeed = 0; // 蓝灯闪烁速度
-    int m_redLedState = 0; // 红灯状态 同步anim_type_t
+    int m_redLedState = 0; // 红灯状态 同步ls_mode_e
     int m_redLedSpeed = 0; // 红灯闪烁速度
     int m_cleanerSpeed = 0; // 超声速度
     int m_fsmState = 0; // 系统状态
@@ -70,7 +70,7 @@ signals:
 public: // 回调
     static void onHalUsCallback(u8 on);
     static void onEnterFsmStateCallback(u8 st);
-    static void onSetLedCallback(u8 id, u8 type, u16 period_ms);
+    static void onSetLedCallback(u8 id, u8 type, u8 speed);
 };
 
 #endif // SIMVIEWMODEL_H

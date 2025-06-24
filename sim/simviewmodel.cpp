@@ -12,14 +12,14 @@ SimViewModel::SimViewModel(QObject *parent)
     g_self = this;
     connect(this, &SimViewModel::batQuatityChanged,
             [this](){
-        hal_batt_sim_set_mv(m_batQuatity);
+        hal_battery_sim_set_mv(m_batQuatity);
     });
-    hal_batt_sim_set_mv(m_batQuatity);
+    hal_battery_sim_set_mv(m_batQuatity);
     connect(this, &SimViewModel::adapterConnectedChanged,
             [this](){
-        hal_batt_sim_set_chg(m_adapterConnected);
+        hal_battery_sim_set_chg(m_adapterConnected);
     });
-    hal_batt_sim_set_chg(m_adapterConnected);
+    hal_battery_sim_set_chg(m_adapterConnected);
 }
 
 void SimViewModel::pressed()
@@ -153,17 +153,17 @@ void SimViewModel::onEnterFsmStateCallback(u8 st)
     g_self->setFsmState(st);
 }
 
-void SimViewModel::onSetLedCallback(u8 id, u8 type, u16 period_ms)
+void SimViewModel::onSetLedCallback(u8 id, u8 type, u8 speed)
 {
-    qDebug() << "id" << id << "type" << type << "period" << period_ms;
+    qDebug() << "id" << id << "type" << type << "period" << speed;
     switch (id) {
     case 0:
         g_self->setRedLedState(type);
-        g_self->setRedLedSpeed(period_ms);
+        g_self->setRedLedSpeed(speed);
         break;
     case 1:
         g_self->setBlueLedState(type);
-        g_self->setBlueLedSpeed(period_ms);
+        g_self->setBlueLedSpeed(speed);
         break;
     default:
         break;

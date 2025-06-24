@@ -63,8 +63,10 @@ static void enter(st_t s)
     if(user_cb) {
         user_cb(s);
     }
-#endif
+    print("fsm enter %d\r\n", s);
+#else
     print("fsm enter %bu\r\n", s);
+#endif
 
     exit(st);          /* 离开旧状态 */
 
@@ -73,14 +75,15 @@ static void enter(st_t s)
     switch(s)
     {
     case OFF:
-    //    led_sm_off(LED_CH_RED);
+        led_sm_off(LED_CH_RED);
+        led_sm_off(LED_CH_BLUE);
     //    led_sm_const(LED_CH_RED, 50);
-        led_sm_breathe(LED_CH_RED, 1);
+    //    led_sm_breathe(LED_CH_RED, 1);
         break;
 
     case WORK:
         hal_us_start();
-        // led_sm_const(LED_CH_BLUE, 100);
+        led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
         t_clean = timer_start(CLEAN_MS, clean_done, 0);
         break;
 
@@ -88,11 +91,11 @@ static void enter(st_t s)
         break;
 
     case CHARGE_FULL:
-        // led_sm_breathe(LED_CH_BLUE, 1);
+        led_sm_const(LED_CH_RED, 100);
         break;
 
     case LOW:
-        // led_sm_breathe(LED_CH_RED, 1);
+        led_sm_breathe(LED_CH_RED, BREATH_FAST);
         t_tmp = timer_start(6000, to_off, 0);
         break;
 
@@ -112,32 +115,36 @@ static void enter(st_t s)
  * ----------------------------------------------------------- */
 static void exit(st_t cur)
 {
+#ifdef PLATFORM_QT
+    print("fsm exit %d\r\n", cur);
+#else
     print("fsm exit %bu\r\n", cur);
+#endif
     switch(cur)
     {
     case WORK:
         /* stop ultrasonic generator */
         hal_us_stop();
 
-        // led_sm_breathe(LED_CH_BLUE, 1);
+        led_sm_off(LED_CH_BLUE);
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
         break;
 
     case CHARGE:
-        // led_sm_breathe(LED_CH_BLUE, 1);
+        led_sm_off(LED_CH_RED);
 
         /* charging-done timer */
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
     case CHARGE_FULL:
-        // led_sm_breathe(LED_CH_BLUE, 1);
+        led_sm_const(LED_CH_RED, 100);
         break;
 
     case LOW:
-        // led_sm_breathe(LED_CH_BLUE, 1);
+        led_sm_off(LED_CH_RED);
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
@@ -175,7 +182,7 @@ void fsm_loop(void)
     case OFF:
         if(tev == TOUCH_EVT_PRESS_500) {
             print("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
-            if(!hal_batt_is_chg()) {
+            if(!hal_battery_is_chg()) {
                 print("fsm OFF: not in charge\r\n");
                 if(hal_battery_get_mv() > LOW_MV) {
                     print("fsm OFF: mv ok\r\n");
@@ -189,7 +196,7 @@ void fsm_loop(void)
             }
         }
 
-        if(hal_batt_is_chg()) {
+        if(hal_battery_is_chg()) {
             enter(CHARGE);
         }
         break;
@@ -201,10 +208,10 @@ void fsm_loop(void)
         }
 		{
 			u16 mv = hal_battery_get_mv();
-			// if(mv < LOW_MV)
-			// 	// led_sm_breathe(LED_CH_BLUE, 1);
-			// else if(mv > LOW_HYST_MV)
-			// 	// led_sm_breathe(LED_CH_BLUE, 1);
+			if(mv < LOW_MV)
+                led_sm_breathe(LED_CH_BLUE, BREATH_FAST);
+			else if(mv > LOW_HYST_MV)
+                led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
 		}
         break;
 
@@ -213,9 +220,9 @@ void fsm_loop(void)
 
     case CHARGE:
         if(hal_battery_get_mv() < CHARG_LOW_MV) {
-            led_sm_breathe(LED_CH_RED, 1);
+            led_sm_breathe(LED_CH_RED, BREATH_FAST);
         } else if(hal_battery_get_mv() > CHARG_MID_MV) {
-            led_sm_breathe(LED_CH_RED, 1);
+            led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
         }
 
         if(hal_battery_get_mv() >= FULL_MV)
@@ -223,19 +230,19 @@ void fsm_loop(void)
             enter(CHARGE_FULL);
         }
 
-        if(!hal_batt_is_chg()) {
+        if(!hal_battery_is_chg()) {
             enter(OFF);
         }
         break;
 
     case CHARGE_FULL:
-        if(!hal_batt_is_chg()) {
+        if(!hal_battery_is_chg()) {
             enter(OFF);
         }
         break;
 
     case LOW:
-        if(hal_batt_is_chg())
+        if(hal_battery_is_chg())
             enter(CHARGE);
         break;
 
