@@ -20,6 +20,10 @@
         "led.h": "c",
         "platform.h": "c",
         "soft_timer.h": "c",
-        "led_sm.h": "c"
+        "led_sm.h": "c",
+        "ultrasonic.h": "c",
+        "soft_pwm.h": "c",
+        "types.h": "c",
+        "time.h": "c"
     }
 }

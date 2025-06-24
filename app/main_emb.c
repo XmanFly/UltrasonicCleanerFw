@@ -4,6 +4,7 @@
 #include "services/soft_pwm.h"
 #include "hal/led.h"
 #include "hal/battery.h"
+#include "hal/ultrasonic.h"
 #include "STC8H.h"
 
 void main(void){    
@@ -11,6 +12,7 @@ void main(void){
     fsm_init();
     hal_time_init();
     hal_battery_init();
+    hal_us_init();
 	
     EA=1;
 

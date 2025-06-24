@@ -447,11 +447,6 @@
               <FilePath>.\services\touch_service.h</FilePath>
             </File>
             <File>
-              <FileName>led_sm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\services\led_sm.c</FilePath>
-            </File>
-            <File>
               <FileName>soft_pwm.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\services\soft_pwm.c</FilePath>
@@ -472,6 +467,11 @@
               <FilePath>.\services\led_group.h</FilePath>
             </File>
             <File>
+              <FileName>led_sm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\services\led_sm.c</FilePath>
+            </File>
+            <File>
               <FileName>led_sm.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\services\led_sm.h</FilePath>
@@ -487,29 +487,14 @@
               <FilePath>.\hal\embedded\batt_emb.c</FilePath>
             </File>
             <File>
-              <FileName>led_emb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\hal\embedded\led_emb.c</FilePath>
-            </File>
-            <File>
-              <FileName>time_emb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\hal\embedded\time_emb.c</FilePath>
-            </File>
-            <File>
-              <FileName>touch_emb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\hal\embedded\touch_emb.c</FilePath>
-            </File>
-            <File>
-              <FileName>us_emb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\hal\embedded\us_emb.c</FilePath>
-            </File>
-            <File>
               <FileName>battery.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\hal\battery.h</FilePath>
+            </File>
+            <File>
+              <FileName>led_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\led_emb.c</FilePath>
             </File>
             <File>
               <FileName>led.h</FileName>
@@ -517,9 +502,19 @@
               <FilePath>.\hal\led.h</FilePath>
             </File>
             <File>
+              <FileName>time_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\time_emb.c</FilePath>
+            </File>
+            <File>
               <FileName>time.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\hal\time.h</FilePath>
+            </File>
+            <File>
+              <FileName>touch_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\touch_emb.c</FilePath>
             </File>
             <File>
               <FileName>touch.h</FileName>
@@ -527,14 +522,14 @@
               <FilePath>.\hal\touch.h</FilePath>
             </File>
             <File>
+              <FileName>us_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\us_emb.c</FilePath>
+            </File>
+            <File>
               <FileName>ultrasonic.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\hal\ultrasonic.h</FilePath>
-            </File>
-            <File>
-              <FileName>uart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\hal\uart.h</FilePath>
             </File>
             <File>
               <FileName>uart_emb.c</FileName>
@@ -542,14 +537,19 @@
               <FilePath>.\hal\embedded\uart_emb.c</FilePath>
             </File>
             <File>
-              <FileName>adc.h</FileName>
+              <FileName>uart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\hal\adc.h</FilePath>
+              <FilePath>.\hal\uart.h</FilePath>
             </File>
             <File>
               <FileName>adc_emb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\hal\embedded\adc_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\adc.h</FilePath>
             </File>
           </Files>
         </Group>
