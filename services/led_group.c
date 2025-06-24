@@ -3,16 +3,18 @@
 #include "common/platform.h"
 #include "hal/led.h"
 
+#define TABLE_SIZE 64
+
 /* √4-bit 半正弦 + γ≈sqrt  LUT */
-static code const u8 lut[64] = {
-      0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,
+static code const u8 lut[TABLE_SIZE] = {
+      1,1,1,1,1,2,2,3,3,4,4,5,5,6,6,7,
       7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,
      15,15,15,15,15,14,14,13,13,12,12,11,11,10,10,9,
       9,8,8,7,7,6,6,5,5,4,4,3,3,2,2,1
 };
 
 /* ------- 默认 IO & 数量表（可改硬件后一起修改） ------- */
-const u8 led_group_size[LED_GROUP_CNT] = {LED_RED_GROUP_CNT};
+const u8 led_group_size[LED_GROUP_CNT] = {LED_RED_GROUP_CNT, LED_BLUE_GROUP_CNT};
 /* ---------------------------------------------------- */
 
 typedef struct {
@@ -37,10 +39,15 @@ static u8 grp_base(u8 grp)
 /* -- 将 4-bit 亮度写入整个组 (软 PWM 0-127) -- */
 static void put_lvl(u8 grp, u8 lv4)
 {
-    u8 base = grp_base(grp);
-    u8 cnt  = led_group_size[grp];
-    u8 duty = (u8)(lv4 << 3);           /* ×8 */
-    qtPrint("put_lvl grp %bu cnt %bu lv4 %bu du %bu\n", grp, cnt, lv4, duty);
+    volatile u8 grp_backup = grp;
+    volatile u8 lv4_backup = lv4; // 此处取出比较安全，默认放在寄存器上，后续函数调用会覆盖
+
+    u8 duty = (u8)(lv4_backup << 3);           /* ×8 */
+    u8 base = grp_base(grp_backup);
+    u8 cnt  = led_group_size[grp_backup];
+    
+    // print("put_lvl id %bu duty %bu\n", grp_backup, lv4_backup);
+
     while (cnt--) {
         soft_pwm_set_level(base + cnt, duty);
     }
@@ -84,36 +91,30 @@ void led_group_set_breathe(u8 grp, u8 div)
 
 void led_group_tick_2ms(void)
 {
-    u8 i;
-    qtPrint("led_group_tick_2ms beingin\n");
+    volatile u8 i;
+
     for (i = 0; i < LED_GROUP_CNT; ++i) {
-        // qtPrint("led_group_tick_2ms %bu\n", i);
         switch (g[i].mode) {
-
         case LG_MODE_OFF:
-            qtPrint("LG_MODE_OFF %bu\n", i);
+            // print("LG_MODE_OFF begin\n");
             put_lvl(i, 0);
-            qtPrint("LG_MODE_OFF end\n");
+            // print("LG_MODE_OFF end\n");
             break;
-
         case LG_MODE_CONST: {            
             u8 duty = (u16)g[i].pct * 127u / 100u;   /* 0-127 */
             put_lvl(i, duty >> 3);                   /* 转 4-bit */
-            // qtPrint("LG_MODE_CONST %bu\n", i);
             break;
         }
-
         case LG_MODE_BREATHE:
             if (++g[i].cnt >= g[i].div) {
                 g[i].cnt = 0;
-                if (++g[i].idx >= 64) g[i].idx = 0;
+                if (++g[i].idx >= TABLE_SIZE) g[i].idx = 0;
             }
             
-            // qtPrint("LG_MODE_BREATHE %bu %bu %bu\n", i, g[i].idx, lut[g[i].idx]);
+            // print("LG_MODE_BREATHE id %bu lut %bu idx %bu\n", i, lut[g[i].idx], g[i].idx);
             put_lvl(i, lut[g[i].idx]);
-            qtPrint("LG_MODE_BREATHE end\n");
+            // print("LG_MODE_BREATHE end\n");
             break;
         }
     }
-    qtPrint("led_group_tick_2ms end\n\n\n");
 }

@@ -92,7 +92,7 @@ void led_sm_blink(u8 ch, u8 pct, u16 on_ms, u16 off_ms)
 
 void led_sm_tick_2ms(void)
 {
-    u8 i;
+    volatile u8 i;
     for (i = 0; i < LED_GROUP_CNT; ++i) {
         if (s[i].mode == LS_MODE_BLINK) {
             if (--s[i].cnt == 0) {

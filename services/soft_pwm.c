@@ -27,21 +27,17 @@ void soft_pwm_set_level(u8 id, u8 lv)
     if (id < LED_NUM) {
         if (lv > LED_LEVEL_MAX) lv = LED_LEVEL_MAX;
         led[id].target = lv;
-        qtPrint("soft %bu %bu\n", id, led[id].target);
-//        qtPrint("soft_pwm_set_level %d %d\n", id, lv);
     }
 }
 
 void soft_pwm_tick_1ms(void)
 {
     u8 i;
-
     if (tick == 0) {                    /* 帧起点：Bresenham, 此处保证了16帧里面数值不变 */
         for (i = 0; i < LED_NUM; ++i) {
             u16 acc = (u16)led[i].err + led[i].target;   /* 0-134 */
             led[i].duty = (u8)(acc >> 3);                /* ÷8→0-15 */
             led[i].err  = (u8)(acc & 0x07);              /* 低 3 位 */
-            qtPrint("soft 1ms du %bu\n", led[i].duty);
         }
     }
 
@@ -59,8 +55,6 @@ void soft_pwm_tick_1ms(void)
     }
 
     if (++tick >= PWM_FRAME_TICKS) tick = 0;
-
-    P11 = !P11;
 }
 
 void led_set_level(u8 id, u8 lv_0_15)

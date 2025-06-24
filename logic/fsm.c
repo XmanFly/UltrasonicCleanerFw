@@ -50,10 +50,10 @@ void fsm_set_callback(fsm_cb_tb cb)
 
 void fsm_init(void)
 {
+    led_sm_init();
     hal_batt_init();
     touch_service_init();
     timer_int();
-    led_sm_init();
     enter(OFF);
 }
 
@@ -65,7 +65,7 @@ static void enter(st_t s)
         user_cb(s);
     }
 #endif
-    qtPrint("fsm enter %bu\r\n", s);
+    print("fsm enter %bu\r\n", s);
 
     exit(st);          /* 离开旧状态 */
 
@@ -74,14 +74,14 @@ static void enter(st_t s)
     switch(s)
     {
     case OFF:
-//        led_sm_off(LED_CH_RED);
-//        led_sm_const(LED_CH_RED, 50);
-        led_sm_breathe(LED_CH_RED, 20);
+    //    led_sm_off(LED_CH_RED);
+    //    led_sm_const(LED_CH_RED, 50);
+        led_sm_breathe(LED_CH_RED, 1);
         break;
 
     case WORK:
         hal_us_start();
-        led_sm_const(LED_CH_BLUE, 100);
+        // led_sm_const(LED_CH_BLUE, 100);
         t_clean = timer_start(CLEAN_MS, clean_done, 0);
         break;
 
@@ -89,11 +89,11 @@ static void enter(st_t s)
         break;
 
     case CHARGE_FULL:
-        led_sm_breathe(LED_CH_BLUE, 1);
+        // led_sm_breathe(LED_CH_BLUE, 1);
         break;
 
     case LOW:
-        led_sm_breathe(LED_CH_RED, 1);
+        // led_sm_breathe(LED_CH_RED, 1);
         t_tmp = timer_start(6000, to_off, 0);
         break;
 
@@ -113,32 +113,32 @@ static void enter(st_t s)
  * ----------------------------------------------------------- */
 static void exit(st_t cur)
 {
-    qtPrint("fsm exit %bu\r\n", cur);
+    print("fsm exit %bu\r\n", cur);
     switch(cur)
     {
     case WORK:
         /* stop ultrasonic generator */
         hal_us_stop();
 
-        led_sm_breathe(LED_CH_BLUE, 1);
+        // led_sm_breathe(LED_CH_BLUE, 1);
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
         break;
 
     case CHARGE:
-        led_sm_breathe(LED_CH_BLUE, 1);
+        // led_sm_breathe(LED_CH_BLUE, 1);
 
         /* charging-done timer */
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
     case CHARGE_FULL:
-        led_sm_breathe(LED_CH_BLUE, 1);
+        // led_sm_breathe(LED_CH_BLUE, 1);
         break;
 
     case LOW:
-        led_sm_breathe(LED_CH_BLUE, 1);
+        // led_sm_breathe(LED_CH_BLUE, 1);
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
@@ -175,18 +175,18 @@ void fsm_loop(void)
     {
     case OFF:
         if(tev == TOUCH_EVT_PRESS_500) {
-            qtPrint("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
+            print("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
             if(!hal_batt_is_chg()) {
-                qtPrint("fsm OFF: not in charge\r\n");
+                print("fsm OFF: not in charge\r\n");
                 if(hal_batt_get_mv() > LOW_MV) {
-                    qtPrint("fsm OFF: mv ok\r\n");
+                    print("fsm OFF: mv ok\r\n");
                     enter(WORK);
                 } else {
-                    qtPrint("fsm OFF: mv low\r\n");
+                    print("fsm OFF: mv low\r\n");
                     enter(LOW);
                 }
             } else {
-                qtPrint("fsm OFF: in charge\r\n");
+                print("fsm OFF: in charge\r\n");
             }
         }
 
@@ -202,10 +202,10 @@ void fsm_loop(void)
         }
 		{
 			u16 mv = hal_batt_get_mv();
-			if(mv < LOW_MV)
-				led_sm_breathe(LED_CH_BLUE, 1);
-			else if(mv > LOW_HYST_MV)
-				led_sm_breathe(LED_CH_BLUE, 1);
+			// if(mv < LOW_MV)
+			// 	// led_sm_breathe(LED_CH_BLUE, 1);
+			// else if(mv > LOW_HYST_MV)
+			// 	// led_sm_breathe(LED_CH_BLUE, 1);
 		}
         break;
 

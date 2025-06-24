@@ -5,10 +5,10 @@
 #include "hal/led.h"
 #include "STC8H.h"
 
-void main(void){
+void main(void){    
     hal_uart_init();
-    hal_time_init();
     fsm_init();
+    hal_time_init();
 	
     EA=1;
 	while(1) {

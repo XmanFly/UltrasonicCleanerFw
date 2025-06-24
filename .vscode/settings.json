@@ -19,6 +19,7 @@
         "stc8h.h": "c",
         "led.h": "c",
         "platform.h": "c",
-        "soft_timer.h": "c"
+        "soft_timer.h": "c",
+        "led_sm.h": "c"
     }
 }

@@ -6,14 +6,16 @@
 
 /* ==== ★  硬件IO ★ ==== */
 const LedIo_t led_io_map[LED_TOTAL] = {
-	{1, 2}, {1, 3}, {1, 4},{1, 5},{1, 6}, {1, 7}
+	{1, 2}, {1, 3}, {1, 4},{1, 5},{1, 6}, {1, 7},
+    {1, 0}
 };											   
 /* ===================================== */
 
 void led_init()
 {
-    P1M0 = 0xff; P1M1 = 0x00; 
-
+    P1M0 = 0xff; 
+    P1M1 = 0x00; 
+    P13 = 0;
 }
 
 void hal_led_set(u8 id, u8 level)
@@ -23,13 +25,14 @@ void hal_led_set(u8 id, u8 level)
 	p = led_io_map[id].port_no;
 	m = led_io_map[id].mask;	
 
- //   qtPrint("led set %bu %bu %bu\n", p, m, level);
+    print("hal_led_set id %bu level %bu\n", id, level);
 
     switch (p)
     {
     case 1:
         switch (m)
         {
+        case 0: P10 = level; break;
         case 1: P11 = level; break;
         case 2: P12 = level; break;
         case 3: P13 = level; break;
@@ -49,14 +52,12 @@ void hal_led_set(u8 id, u8 level)
 
 void led_on(u8 id)
 {
-//    qtPrint("on %bu", id);
     if (id >= LED_TOTAL) return;
     hal_led_set(id, LED_ACTIVE_LEVEL);
 }
 
 void led_off(u8 id)
 {
-//    qtPrint("off %bu", id);
     if (id >= LED_TOTAL) return;
     hal_led_set(id, !LED_ACTIVE_LEVEL);
 }
