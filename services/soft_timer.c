@@ -2,7 +2,7 @@
 #include "common/platform.h"
 #include <string.h>
 
-#define MAX_TMR 4
+#define MAX_TMR 2
 
 typedef struct
 {
@@ -13,7 +13,7 @@ typedef struct
 } tmr_t;
 
 /* large arrays stay in XDATA */
-static xdata tmr_t tbl[MAX_TMR];
+static data tmr_t tbl[MAX_TMR];
 
 void timer_int()
 {
@@ -47,12 +47,14 @@ void timer_stop(int id)
 void soft_timer_tick_1ms(void)
 {
     int i;
-
+    
+    P11 = 1;
     for(i = 0; i < MAX_TMR; i++) {
         if(tbl[i].cb && tbl[i].cnt) {
             tbl[i].cnt--;
         }
     }
+    P11 = 0;
 }
 
 void soft_timer_task(void)

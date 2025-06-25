@@ -21,7 +21,7 @@ void ADC_Init(void);
 void ADC_SetChannel(u8 ch);
 
 /* 启动一次转换并阻塞等待结束，返回 0-1023 原始值 */
-u16  ADC_RunOnce(void);
+u16  ADC_Read(void);
 
 #ifdef __cplusplus
 }   /* extern "C" */

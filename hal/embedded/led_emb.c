@@ -5,7 +5,7 @@
 #define LED_ACTIVE_LEVEL   1 /* 1 = 高电平点亮；0 = 低电平点亮 */
 
 /* ==== ★  硬件IO ★ ==== */
-const LedIo_t led_io_map[LED_TOTAL] = {
+data volatile const LedIo_t led_io_map[LED_TOTAL] = {
 	{1, 2}, {1, 3}, {1, 4},{1, 5},{1, 6}, {1, 7},
     {1, 0}
 };											   
@@ -19,7 +19,7 @@ void led_init()
 
 void hal_led_set(u8 id, u8 level)
 {
-	u8 p, m;
+	volatile u8 p, m;
 	if (id >= LED_TOTAL) return;
 	p = led_io_map[id].port_no;
 	m = led_io_map[id].mask;	

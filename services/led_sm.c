@@ -1,4 +1,5 @@
 #include "led_sm.h"
+#include "common/platform.h"
 
 #ifdef PLATFORM_QT
 static led_sm_cb_tb user_cb = 0;
@@ -15,7 +16,7 @@ typedef struct {
     u8  blink_on;  /* 1=当前亮,0=灭        */
 } sm_t;
 
-static sm_t s[LED_GROUP_CNT];
+static volatile sm_t s[LED_GROUP_CNT];
 
 /* ---------- 私有：把状态写到底层 ---------- */
 static void apply(u8 ch)
@@ -88,6 +89,8 @@ void led_sm_const(u8 ch, u8 pct)
     s[ch].pct  = pct;
     apply(ch);
 
+    print("led_sm_const\n");
+
 #ifdef PLATFORM_QT
     if (user_cb) {
         user_cb(ch, LS_MODE_CONST, 100);
@@ -106,6 +109,8 @@ void led_sm_breathe(u8 ch, u8 div)
     s[ch].div  = div;
     if (s[ch].pct == 0) s[ch].pct = 100;      /* 默认峰值 */
     apply(ch);
+
+    print("led_sm_breathe ch %bu div %bu\n", ch, div);
 
 #ifdef PLATFORM_QT
     if (user_cb) {
@@ -138,6 +143,9 @@ void led_sm_blink(u8 ch, u8 pct, u16 on_ms, u16 off_ms)
     s[ch].cnt       = s[ch].on_tick;
     s[ch].blink_on  = 1;
     apply(ch);
+
+    print("led_sm_blink\n");
+
 }
 
 void led_sm_tick_2ms(void)

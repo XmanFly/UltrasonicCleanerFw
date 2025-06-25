@@ -8,18 +8,21 @@
 #include "STC8H.h"
 
 void main(void){    
-    hal_uart_init();
+    // hal_uart_init();
     fsm_init();
     hal_time_init();
-    // hal_battery_init();
+    hal_battery_init();
     hal_us_init();
-
-    // hal_us_start();
 	
     EA=1;
 
 	while(1) {
-        fsm_loop();     // 主状态机
-        // hal_battery_task(); // 电池任务
+        fsm_loop(); // 主状态机
+
+        // 电池任务
+        if (batt_due) {
+            batt_due = 0;
+            hal_battery_task(); 
+        }        
     }
 }

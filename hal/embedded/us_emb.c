@@ -1,4 +1,4 @@
-
+// fac6609a-b7c0-40c1-9cfe-7f9f5035e8cc_lookup.c
 #include "hal/ultrasonic.h"
 #include "common/platform.h"
 
@@ -7,13 +7,27 @@
 #endif
 
 /* ====== 内部静态状态 ====== */
-static volatile unsigned short us_curFreqKHz = HAL_US_F_MIN_KHZ;
-static volatile unsigned char  us_dirUp      = 1u;     /* 1=向上扫,0=向下扫 */
-static volatile unsigned short us_tickCnt    = 0u;
-static volatile bit            us_running    = 0;
+static volatile u16 us_curFreqKHz = HAL_US_F_MIN_KHZ;  /* 当前频率 kHz */
+static volatile u8  us_dirUp      = 1u;               /* 1=向上扫,0=向下扫 */
+static volatile u16 us_tickCnt    = 0u;               /* 滤波计数 */
+static volatile bit us_running    = 0;                /* 是否在扫频 */
 
-static volatile u16 arr;
-static volatile u16 cmpVal;
+static volatile u16 arr;      /* 当前 ARR */
+static volatile u16 cmpVal;   /* 当前 CCR */
+
+/* ====== 查表常量 ====== */
+/* 表长度 = (MAX−MIN)/STEP + 1 = (158−138)/1 + 1 = 21 */
+#define US_LUT_SIZE  ((HAL_US_F_MAX_KHZ - HAL_US_F_MIN_KHZ) / HAL_US_F_STEP_KHZ + 1)
+
+/* 预先计算：ARR = floor(HAL_US_FOSC_KHZ / freq_kHz) − 1 */
+static const u16 us_arr_tab[US_LUT_SIZE] = {
+    /* 138→158 kHz */
+    /*138*/ 79, /*139*/ 78, /*140*/ 77, /*141*/ 77, /*142*/ 76,
+    /*143*/ 76, /*144*/ 75, /*145*/ 75, /*146*/ 74, /*147*/ 74,
+    /*148*/ 73, /*149*/ 73, /*150*/ 72, /*151*/ 72, /*152*/ 71,
+    /*153*/ 71, /*154*/ 70, /*155*/ 70, /*156*/ 69, /*157*/ 69,
+    /*158*/ 68
+};
 
 /* ====== 计算常量 ====== */
 #define US_STEP_MS    ( (HAL_US_HALF_SWEEP_MS) * (HAL_US_F_STEP_KHZ) / \
@@ -23,43 +37,46 @@ static volatile u16 cmpVal;
 #define US_PWM_MODE1  0x68   /* OCxM=110, OCxPE=1 → PWM mode-1, 预装载 */
 
 /* ====== 内部函数：设置频率 ====== */
-static void us_setFreq(unsigned short kHz)
+static void us_setFreq(u16 kHz)
 {
-    volatile u16 kHz_backup = kHz;
-    volatile u16 t2 = (u16)HAL_US_FOSC_KHZ / kHz_backup;
-    volatile u16 arr = t2 -1;
-    volatile u16 cmpVal = arr >> 1;                       /* 50 % 占空 */
+    /* 计算在表中的索引，完全去掉除法 */
+    volatile u8 idx = (u8)(kHz - HAL_US_F_MIN_KHZ);
 
-    EA = 0;
+    /* 查表取出 ARR，再右移一次代替 50% 占空计算 */
+    volatile a = us_arr_tab[idx];
+    volatile c = a >> 1;  /* 50% 占空 */
 
-    /* —— 按官方顺序：先比较后周期，且都高字节→低字节 —— */
-    PWMA_CCR4H = cmpVal >> 8;
-    PWMA_CCR4L = (u8)cmpVal;
-    PWMA_ARRH  = arr >> 8;
-    PWMA_ARRL  = (u8)arr;
-    EA = 1;
+    // EA = 0;  /* 关中断，按官方顺序先写 CCR 再写 ARR */
+
+    PWMA_CCR4H = (u8)(c >> 8);
+    PWMA_CCR4L = (u8)(c      );
+    PWMA_ARRH  = (u8)(a >> 8);
+    PWMA_ARRL  = (u8)(a      );
+    
+    // EA = 1;
 }
 
 /* ====== HAL 实现 ====== */
 void hal_us_init(void)
 {
     /* ---- P3.3 设为推挽输出 ---- */
-    P3M0 |=  0x08;       /* M0=1 */
-    P3M1 &= ~0x08;       /* M1=0 -> Push-pull */
+    P3M0 |=  0x08;  /* M0=1 */
+    P3M1 &= ~0x08;  /* M1=0 -> Push-pull */
 
     /* ---- 映射 PWM4N → P3.3 ---- */
-    P_SW2  |= 0x80;                      /* 进入 XFR 区 */
-    PWMA_PS = (PWMA_PS & ~0xC0) | 0xC0;  /* C4PS = 11 (P3.4 / P3.3) */
+    P_SW2  |= 0x80;                     /* 进入 XFR 区 */
+    PWMA_PS = (PWMA_PS & ~0xC0) | 0xC0; /* C4PS = 11 (P3.4 / P3.3) */
 
     /* ---- PWMA 通道 4N 基本配置 ---- */
-    PWMA_ENO  |= 0x80;                   /* ENO4N =1             */
-    PWMA_PSCRH = 0;  PWMA_PSCRL = 0;     /* 预分频 1             */
-    PWMA_CCMR4 = US_PWM_MODE1;           /* PWM mode-1, 预装载    */
-    PWMA_CCER2 = 0x40;                   /* **CC4NE=1** (N相使能) */
-    PWMA_BKR   = 0x80;                   /* **MOE=1**  主输出使能 */
-    PWMA_CR1   = 0x80;                   /* ARPE=1               */
+    PWMA_ENO   |= 0x80;   /* ENO4N =1 */
+    PWMA_PSCRH  = 0;      /* 预分频 1 */
+    PWMA_PSCRL  = 0;
+    PWMA_CCMR4  = US_PWM_MODE1;  /* PWM mode-1, 预装载 */
+    PWMA_CCER2  = 0x40;   /* CC4NE=1 (N相使能) */
+    PWMA_BKR    = 0x80;   /* MOE=1  主输出使能 */
+    PWMA_CR1    = 0x80;   /* ARPE=1 */
 
-    us_setFreq(HAL_US_F_MIN_KHZ);        /* 默认 138 kHz          */
+    us_setFreq(HAL_US_F_MIN_KHZ);  /* 默认 138 kHz */
 }
 
 void hal_us_start(void)
@@ -67,14 +84,14 @@ void hal_us_start(void)
     us_curFreqKHz = HAL_US_F_MIN_KHZ;
     us_dirUp      = 1u;
     us_tickCnt    = 0u;
-    us_running    = 1;    
-    PWMA_CR1     |= 0x01;                         /* CEN=1 启动计数 */
+    us_running    = 1;
+    PWMA_CR1     |= 0x01;  /* CEN=1 启动计数 */
     print("hal_us_start\n");
 }
 
 void hal_us_stop(void)
 {
-    PWMA_CR1     &= ~0x01;                        /* 关闭计数器     */
+    PWMA_CR1     &= ~0x01;  /* 关闭计数器 */
     us_running    = 0;
     print("hal_us_stop\n");
 }
@@ -87,34 +104,21 @@ void hal_us_tick_1ms(void)
     us_tickCnt = 0u;
 
     /* ------ 计算下一频率 ------ */
-    if (us_dirUp)
-    {
-        if (us_curFreqKHz < HAL_US_F_MAX_KHZ)
-        {
+    if (us_dirUp) {
+        if (us_curFreqKHz < HAL_US_F_MAX_KHZ) {
             us_curFreqKHz += HAL_US_F_STEP_KHZ;
-        }
-        else
-        {
-            us_dirUp = 0u;
+        } else {
+            us_dirUp      = 0u;
             us_curFreqKHz -= HAL_US_F_STEP_KHZ;
         }
-    }
-    else
-    {
-        if (us_curFreqKHz > HAL_US_F_MIN_KHZ)
-        {
+    } else {
+        if (us_curFreqKHz > HAL_US_F_MIN_KHZ) {
             us_curFreqKHz -= HAL_US_F_STEP_KHZ;
-        }
-        else
-        {
-            us_dirUp = 1u;
+        } else {
+            us_dirUp      = 1u;
             us_curFreqKHz += HAL_US_F_STEP_KHZ;
         }
     }
 
     us_setFreq(us_curFreqKHz);
-    // us_setFreq(HAL_US_F_MAX_KHZ);
-    
-    // print("hal_us_tick_1ms\n");
-
 }

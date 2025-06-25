@@ -8,15 +8,16 @@ char buf[124];        /* temporary print buffer */
 
 void print(const char *fmt, ...)
 {    
-    va_list args;
+    return;
+    // va_list args;
 
-    va_start(args, fmt);
-    vsprintf(buf, fmt, args);  /* format into buf (null-terminated) */
+    // va_start(args, fmt);
+    // vsprintf(buf, fmt, args);  /* format into buf (null-terminated) */
     
-    /* send the formatted string over UART */
-    hal_uart_send_buf((const u8 *)buf);
+    // /* send the formatted string over UART */
+    // hal_uart_send_buf((const u8 *)buf);
 
-    va_end(args);
+    // va_end(args);
 
     // (void)fmt;            /* 什么都不做，零代码体积 */
     /* 若要输出串口，可在这里用 vsprintf + putchar 实现 */

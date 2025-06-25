@@ -8,8 +8,8 @@ typedef struct {
     u8 duty;        /* 本帧占空 0-15 */
 } pwm_t;
 
-static pwm_t led[LED_NUM];
-static u8     tick = 0;                /* 0-15 */
+static volatile pwm_t led[LED_NUM];
+static volatile u8     tick = 0;                /* 0-15 */
 
 void soft_pwm_init(void)
 {
@@ -33,7 +33,7 @@ void soft_pwm_set_level(u8 id, u8 lv)
 
 void soft_pwm_tick_1ms(void)
 {
-    u8 i;
+    volatile u8 i;
     if (tick == 0) {                    /* 帧起点：Bresenham, 此处保证了16帧里面数值不变 */
         for (i = 0; i < LED_NUM; ++i) {
             u16 acc = (u16)led[i].err + led[i].target;   /* 0-134 */

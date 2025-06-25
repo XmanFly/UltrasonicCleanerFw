@@ -24,7 +24,7 @@ typedef struct {
     u8 port_no;   /* 1 = P1, 2 = P2, … */
     u8           mask;   /* 对应位：1<<0、1<<1… */
 } LedIo_t;	
-extern const LedIo_t led_io_map[LED_TOTAL];
+extern data volatile const LedIo_t led_io_map[LED_TOTAL];
 
 /* 4) 各组实际灯数 */
 extern code const u8 led_group_size[LED_GROUP_CNT];

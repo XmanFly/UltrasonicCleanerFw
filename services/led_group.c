@@ -26,7 +26,7 @@ typedef struct {
     u8 idx; // 分频后计数
 } grp_t;
 
-static grp_t g[LED_GROUP_CNT];
+static volatile grp_t g[LED_GROUP_CNT];
 
 /* -- 工具：获取组内 LED 起始线性索引 -- */
 static u8 grp_base(u8 grp)
