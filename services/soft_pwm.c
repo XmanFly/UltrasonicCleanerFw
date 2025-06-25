@@ -8,8 +8,8 @@ typedef struct {
     u8 duty;        /* 本帧占空 0-15 */
 } pwm_t;
 
-static volatile pwm_t led[LED_NUM];
-static volatile u8     tick = 0;                /* 0-15 */
+static pwm_t led[LED_NUM];
+static u8     tick = 0;                /* 0-15 */
 
 void soft_pwm_init(void)
 {
