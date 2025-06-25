@@ -27,7 +27,7 @@ typedef struct {
 extern const LedIo_t led_io_map[LED_TOTAL];
 
 /* 4) 各组实际灯数 */
-extern const u8 led_group_size[LED_GROUP_CNT];
+extern code const u8 led_group_size[LED_GROUP_CNT];
 /* ------------------------------------ */
 
 /* 组工作模式 */

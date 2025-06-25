@@ -14,7 +14,7 @@ static code const u8 lut[TABLE_SIZE] = {
 };
 
 /* ------- 默认 IO & 数量表（可改硬件后一起修改） ------- */
-const u8 led_group_size[LED_GROUP_CNT] = {LED_RED_GROUP_CNT, LED_BLUE_GROUP_CNT};
+code const u8 led_group_size[LED_GROUP_CNT] = {LED_RED_GROUP_CNT, LED_BLUE_GROUP_CNT};
 /* ---------------------------------------------------- */
 
 typedef struct {
