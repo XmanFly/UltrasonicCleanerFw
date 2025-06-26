@@ -5,8 +5,8 @@
 
 static led_cb_tb user_cb = 0;
 
-const LedIo_t led_io_map[LED_TOTAL] = {
-    {1, 2}, {1, 3},
+const volatile LedIo_t led_io_map[LED_TOTAL] = {
+    {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6},
     {1, 0}
 };
 void led_init()

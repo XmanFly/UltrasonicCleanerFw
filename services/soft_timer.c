@@ -13,7 +13,11 @@ typedef struct
 } tmr_t;
 
 /* large arrays stay in XDATA */
+#ifdef __C51__
 static data tmr_t tbl[MAX_TMR];
+#else
+static tmr_t tbl[MAX_TMR];
+#endif
 
 void timer_int()
 {
@@ -48,13 +52,20 @@ void soft_timer_tick_1ms(void)
 {
     int i;
     
+#ifdef __C51__
     P11 = 1;
+#endif
+
     for(i = 0; i < MAX_TMR; i++) {
         if(tbl[i].cb && tbl[i].cnt) {
             tbl[i].cnt--;
         }
     }
+
+#ifdef __C51__
     P11 = 0;
+#endif
+
 }
 
 void soft_timer_task(void)

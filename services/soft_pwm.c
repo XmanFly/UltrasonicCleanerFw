@@ -4,7 +4,6 @@
 
 typedef struct {
     u8 target;      /* 0-127 */
-    u8 err;         /* 3-bit 余数 */
     u8 duty;        /* 本帧占空 0-15 */
 } pwm_t;
 
@@ -16,7 +15,6 @@ void soft_pwm_init(void)
     u8 i;
     for (i = 0; i < LED_NUM; ++i) {
         led[i].target = 0;
-        led[i].err    = 0;
         led[i].duty   = 0;
         led_off(i);
     }
@@ -34,11 +32,9 @@ void soft_pwm_set_level(u8 id, u8 lv)
 void soft_pwm_tick_1ms(void)
 {
     volatile u8 i;
-    if (tick == 0) {                    /* 帧起点：Bresenham, 此处保证了16帧里面数值不变 */
+    if (tick == 0) {                    /* 帧起点, 此处保证了16帧里面数值不变 */
         for (i = 0; i < LED_NUM; ++i) {
-            u16 acc = (u16)led[i].err + led[i].target;   /* 0-134 */
-            led[i].duty = (u8)(acc >> 3);                /* ÷8→0-15 */
-            led[i].err  = (u8)(acc & 0x07);              /* 低 3 位 */
+            led[i].duty = (u8)(led[i].target >> 3); /* ÷8→0-15 */
         }
     }
 
