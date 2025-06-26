@@ -13,10 +13,6 @@ static code const u8 lut[TABLE_SIZE] = {
       9,8,8,7,7,6,6,5,5,4,4,3,3,2,2,1
 };
 
-/* ------- 默认 IO & 数量表（可改硬件后一起修改） ------- */
-code const u8 led_group_size[LED_GROUP_CNT] = {LED_RED_GROUP_CNT, LED_BLUE_GROUP_CNT};
-/* ---------------------------------------------------- */
-
 typedef struct {
     lg_mode_e mode;          /* lg_mode_e */
     u8 pct;           /* 恒亮 0-100 */
@@ -28,27 +24,11 @@ typedef struct {
 
 static volatile grp_t g[LED_GROUP_CNT];
 
-/* -- 工具：获取组内 LED 起始线性索引 -- */
-static u8 grp_base(u8 grp)
-{
-    volatile u8 base = 0, i;
-    for (i = 0; i < grp; ++i) base += led_group_size[i];
-    return base;
-}
-
 /* -- 将 4-bit 亮度写入整个组 (软 PWM 0-127) -- */
 static void put_lvl(u8 grp, u8 lv4)
 {
-    volatile u8 grp_backup = grp;
-    volatile u8 lv4_backup = lv4; // 此处取出比较安全，默认放在寄存器上，后续函数调用会覆盖
-
-    u8 duty = (u8)(lv4_backup << 3);           /* ×8 */
-    u8 base = grp_base(grp_backup);
-    u8 cnt  = led_group_size[grp_backup];
-
-    while (cnt--) {
-        soft_pwm_set_level(base + cnt, duty);
-    }
+    u8 duty = (u8)(lv4 << 3);           /* ×8 */
+    soft_pwm_set_level(grp, duty);
     
     // print("put_lvl id %bu duty %bu base %bu cnt %bu\n", grp_backup, lv4_backup, base, cnt);
 }

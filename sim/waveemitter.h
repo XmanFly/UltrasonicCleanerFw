@@ -11,7 +11,7 @@ public:
     explicit WaveEmitter(QObject *parent = nullptr);
 
 public: // 回调
-    static void onEmitIO(u8 id, u8 on);
+    static void onEmitIO(u8 grp, u8 on);
 
 signals:
     void ioChanged(u8 id, u8 on);

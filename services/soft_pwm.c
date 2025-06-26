@@ -7,24 +7,24 @@ typedef struct {
     u8 duty;        /* 本帧占空 0-15 */
 } pwm_t;
 
-static pwm_t led[LED_NUM];
+static pwm_t ledGroup[LED_GROUP_CNT];
 static u8     tick = 0;                /* 0-15 */
 
 void soft_pwm_init(void)
 {
     u8 i;
-    for (i = 0; i < LED_NUM; ++i) {
-        led[i].target = 0;
-        led[i].duty   = 0;
+    for (i = 0; i < LED_GROUP_CNT; ++i) {
+        ledGroup[i].target = 0;
+        ledGroup[i].duty   = 0;
         led_off(i);
     }
 }
 
 void soft_pwm_set_level(u8 id, u8 lv)
 {
-    if (id < LED_NUM) {
+    if (id < LED_GROUP_CNT) {
         if (lv > LED_LEVEL_MAX) lv = LED_LEVEL_MAX;
-        led[id].target = lv;
+        ledGroup[id].target = lv;
     }
     // print("soft_pwm_set_level id %bu lv %bu\n", id, lv);
 }
@@ -33,18 +33,18 @@ void soft_pwm_tick_1ms(void)
 {
     volatile u8 i;
     if (tick == 0) {                    /* 帧起点, 此处保证了16帧里面数值不变 */
-        for (i = 0; i < LED_NUM; ++i) {
-            led[i].duty = (u8)(led[i].target >> 3); /* ÷8→0-15 */
+        for (i = 0; i < LED_GROUP_CNT; ++i) {
+            ledGroup[i].duty = (u8)(ledGroup[i].target >> 3); /* ÷8→0-15 */
         }
     }
 
-    for (i = 0; i < LED_NUM; ++i) {
+    for (i = 0; i < LED_GROUP_CNT; ++i) {
         // 亮度为0 特殊处理
-        if(led[i].duty == 0) {
+        if(ledGroup[i].duty == 0) {
             led_off(i);
             continue;
         }
-        if (tick <= led[i].duty)  {            
+        if (tick <= ledGroup[i].duty)  {            
             led_on(i);
         } else {
             led_off(i);
@@ -54,7 +54,7 @@ void soft_pwm_tick_1ms(void)
     if (++tick >= PWM_FRAME_TICKS) tick = 0;
 }
 
-void led_set_level(u8 id, u8 lv_0_15)
+void led_set_level(u8 group, u8 lv_0_15)
 {
-    soft_pwm_set_level(id, (u8)(lv_0_15 << 3));   /* ×8 */
+    soft_pwm_set_level(group, (u8)(lv_0_15 << 3));   /* ×8 */
 }

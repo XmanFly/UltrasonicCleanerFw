@@ -14,7 +14,7 @@ public:
 
 public slots:
     /// 每次接收一个 int，就追加到内存缓冲
-    void onDataReceived(int id, int value);
+    void onDataReceived(int grp, int value);
 
 private slots:
     /// 定时把缓冲落盘

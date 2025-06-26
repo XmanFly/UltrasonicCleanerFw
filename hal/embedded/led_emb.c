@@ -5,10 +5,12 @@
 #define LED_ACTIVE_LEVEL   1 /* 1 = 高电平点亮；0 = 低电平点亮 */
 
 /* ==== ★  硬件IO ★ ==== */
-data volatile const LedIo_t led_io_map[LED_TOTAL] = {
-	{1, 2}, {1, 3}, {1, 4},{1, 5},{1, 6}, {1, 7},
-    {1, 0}
-};											   
+data volatile const LedIo_t red_group[LED_RED_GROUP_CNT] = {
+	{1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7},
+};					
+data volatile const LedIo_t blue_group[LED_BLUE_GROUP_CNT] = {
+	{1, 0}
+};							   
 /* ===================================== */
 
 void led_init()
@@ -17,19 +19,12 @@ void led_init()
     P1M1 = 0x00; 
 }
 
-void hal_led_set(u8 id, u8 level)
+void hal_led_set_io(LedIo_t *io, u8 level)
 {
-	volatile u8 p, m;
-	if (id >= LED_TOTAL) return;
-	p = led_io_map[id].port_no;
-	m = led_io_map[id].mask;	
-
-//    print("hal_led_set id %bu level %bu\n", id, level);
-
-    switch (p)
+    switch (io->port_no)
     {
     case 1:
-        switch (m)
+        switch (io->mask)
         {
         case 0: P10 = level; break;
         case 1: P11 = level; break;
@@ -49,14 +44,42 @@ void hal_led_set(u8 id, u8 level)
     }
 }
 
-void led_on(u8 id)
+void hal_led_set_group(u8 grp, u8 level)
 {
-    if (id >= LED_TOTAL) return;
-    hal_led_set(id, LED_ACTIVE_LEVEL);
+	u8 i;
+    LedIo_t *grpArr;
+    u8 grpSize;
+	if (grp >= LED_GROUP_CNT) return;
+
+    switch (grp)
+    {
+    case 0: 
+        grpArr = red_group;
+        grpSize = LED_RED_GROUP_CNT;
+        break;
+    case 1: 
+        grpArr = blue_group;
+        grpSize = LED_BLUE_GROUP_CNT;
+        break;
+    default:
+        break;
+    }
+
+    for(i=0; i<grpSize; i++) {
+        hal_led_set_io(&grpArr[i], level);
+    }
+
+    // print("hal_led_set id %bu level %bu\n", grp, level);    
 }
 
-void led_off(u8 id)
+void led_on(u8 grp)
 {
-    if (id >= LED_TOTAL) return;
-    hal_led_set(id, !LED_ACTIVE_LEVEL);
+    if (grp >= LED_GROUP_CNT) return;
+    hal_led_set_group(grp, LED_ACTIVE_LEVEL);
+}
+
+void led_off(u8 grp)
+{
+    if (grp >= LED_GROUP_CNT) return;
+    hal_led_set_group(grp, !LED_ACTIVE_LEVEL);
 }

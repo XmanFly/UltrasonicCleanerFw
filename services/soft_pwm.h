@@ -17,7 +17,7 @@ void soft_pwm_set_level(u8 id, u8 level_0_127);   /* 任意占空 */
 void soft_pwm_tick_1ms(void);                     /* 1 ms 调用 */
 
 /* 给 led_group 用的 4-bit 封装 */
-void led_set_level(u8 id, u8 lv_0_15);
+void led_set_level(u8 group, u8 lv_0_15);
 
 #ifdef __cplusplus
 }   /* extern "C" */

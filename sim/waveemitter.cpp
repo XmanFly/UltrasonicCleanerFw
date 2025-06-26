@@ -8,7 +8,10 @@ WaveEmitter::WaveEmitter(QObject *parent)
     g_self = this;
 }
 
-void WaveEmitter::onEmitIO(u8 id, u8 on)
+void WaveEmitter::onEmitIO(u8 grp, u8 on)
 {
-    emit g_self->ioChanged(id, on);
+    if(grp == 0) {
+        return;
+    }
+    emit g_self->ioChanged(grp, on);
 }

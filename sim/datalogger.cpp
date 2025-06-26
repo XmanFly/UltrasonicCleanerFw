@@ -38,13 +38,8 @@ DataLogger::~DataLogger()
     m_file.close();
 }
 
-void DataLogger::onDataReceived(int id, int value)
+void DataLogger::onDataReceived(int grp, int value)
 {
-    if(id) {
-        return;
-    }
-
-
     // 1ms 内存操作：整数→ASCII + 换行
 //    m_buffer.append(QByteArray::number(m_cnt++));
 //    m_buffer.append(",");
