@@ -3,7 +3,7 @@
 #include "common/platform.h"
 
 typedef struct {
-    u8 target;      /* 0-127 */
+    u8 target;      /* 0-15 */
     u8 duty;        /* 本帧占空 0-15 */
 } pwm_t;
 
@@ -34,7 +34,7 @@ void soft_pwm_tick_1ms(void)
     volatile u8 i;
     if (tick == 0) {                    /* 帧起点, 此处保证了16帧里面数值不变 */
         for (i = 0; i < LED_GROUP_CNT; ++i) {
-            ledGroup[i].duty = (u8)(ledGroup[i].target >> 3); /* ÷8→0-15 */
+            ledGroup[i].duty = ledGroup[i].target; /* ÷8→0-15 */
         }
     }
 
@@ -52,9 +52,4 @@ void soft_pwm_tick_1ms(void)
     }
 
     if (++tick >= PWM_FRAME_TICKS) tick = 0;
-}
-
-void led_set_level(u8 group, u8 lv_0_15)
-{
-    soft_pwm_set_level(group, (u8)(lv_0_15 << 3));   /* ×8 */
 }

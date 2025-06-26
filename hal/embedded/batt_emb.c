@@ -57,8 +57,8 @@ void hal_battery_task(void)
     batt_raw_mV = (u16)vinRaw_mv;
     batt_mV = (u16)vin_mv;
 
-    print("hal_battery_task bg_raw %u bat_raw %u vcc_mv %lu vinRaw_mv %lu vin_mv %lu\n",
-            bg_raw, bat_raw, vcc_mv, vinRaw_mv, vin_mv);
+    // print("hal_battery_task bg_raw %u bat_raw %u vcc_mv %lu vinRaw_mv %lu vin_mv %lu\n",
+    //         bg_raw, bat_raw, vcc_mv, vinRaw_mv, vin_mv);
 }
 
 u16 hal_battery_get_mv(void)

@@ -27,7 +27,7 @@ static volatile grp_t g[LED_GROUP_CNT];
 /* -- 将 4-bit 亮度写入整个组 (软 PWM 0-127) -- */
 static void put_lvl(u8 grp, u8 lv4)
 {
-    u8 duty = (u8)(lv4 << 3);           /* ×8 */
+    u8 duty = lv4;           /* ×8 */
     soft_pwm_set_level(grp, duty);
     
     // print("put_lvl id %bu duty %bu base %bu cnt %bu\n", grp_backup, lv4_backup, base, cnt);
@@ -72,6 +72,7 @@ void led_group_set_breathe(u8 grp, u8 div)
 void led_group_tick_2ms(void)
 {
     volatile u8 i;
+    volatile u8 duty;
 
     for (i = 0; i < LED_GROUP_CNT; ++i) {
         switch (g[i].mode) {
@@ -81,8 +82,8 @@ void led_group_tick_2ms(void)
             // print("LG_MODE_OFF end\n");
             break;
         case LG_MODE_CONST: {            
-            u8 duty = (u16)g[i].pct * 127u / 100u;   /* 0-127 */
-            put_lvl(i, duty >> 3);                   /* 转 4-bit */
+            duty = g[i].pct;   /* 0-127 */
+            put_lvl(i, duty);                   /* 转 4-bit */
             break;
         }
         case LG_MODE_BREATHE:

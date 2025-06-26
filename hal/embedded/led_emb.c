@@ -46,12 +46,15 @@ void hal_led_set_io(LedIo_t *io, u8 level)
 
 void hal_led_set_group(u8 grp, u8 level)
 {
-	u8 i;
-    LedIo_t *grpArr;
-    u8 grpSize;
-	if (grp >= LED_GROUP_CNT) return;
+    volatile u8 grp_bk = grp;
+    volatile u8 level_bk = level;
+	volatile u8 i;
+    volatile LedIo_t *grpArr;
+    volatile u8 grpSize;
+    
+	if (grp_bk >= LED_GROUP_CNT) return;
 
-    switch (grp)
+    switch (grp_bk)
     {
     case 0: 
         grpArr = red_group;
@@ -66,7 +69,7 @@ void hal_led_set_group(u8 grp, u8 level)
     }
 
     for(i=0; i<grpSize; i++) {
-        hal_led_set_io(&grpArr[i], level);
+        hal_led_set_io(&grpArr[i], level_bk);
     }
 
     // print("hal_led_set id %bu level %bu\n", grp, level);    
