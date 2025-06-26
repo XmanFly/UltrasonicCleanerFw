@@ -31,7 +31,7 @@ static volatile grp_t g[LED_GROUP_CNT];
 /* -- 工具：获取组内 LED 起始线性索引 -- */
 static u8 grp_base(u8 grp)
 {
-    volatile base = 0, i;
+    volatile u8 base = 0, i;
     for (i = 0; i < grp; ++i) base += led_group_size[i];
     return base;
 }
