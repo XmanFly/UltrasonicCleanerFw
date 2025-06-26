@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+#define UART_ENABLE 1
+#define PRINT 1
+
+
 #ifdef PLATFORM_QT
     #include <stdio.h>
 

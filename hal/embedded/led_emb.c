@@ -6,7 +6,11 @@
 
 /* ==== ★  硬件IO ★ ==== */
 data volatile const LedIo_t red_group[LED_RED_GROUP_CNT] = {
-	{1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7},
+#if !UART_ENABLE    
+	{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {3, 1}, {5, 4}
+#else
+    {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {5, 4}
+#endif
 };					
 data volatile const LedIo_t blue_group[LED_BLUE_GROUP_CNT] = {
 	{1, 0}
@@ -17,6 +21,14 @@ void led_init()
 {
     P1M0 = 0xff; 
     P1M1 = 0x00; 
+
+#if !UART_ENABLE
+    P3M0 |= 0x02; 
+    P3M1 &= ~0x02; 
+#endif
+
+    P5M0 |= 0x10; 
+    P5M1 &= ~0x10; 
 }
 
 void hal_led_set_io(LedIo_t *io, u8 level)
@@ -34,11 +46,37 @@ void hal_led_set_io(LedIo_t *io, u8 level)
         case 5: P15 = level; break;
         case 6: P16 = level; break;
         case 7: P17 = level; break;
-        default:
-            break;
+        default: break;
         }
         break;
-    
+    case 3:
+        switch (io->mask)
+        {
+        case 0: P30 = level; break;
+        case 1: P31 = level; break;
+        case 2: P32 = level; break;
+        case 3: P33 = level; break;
+        case 4: P34 = level; break;
+        case 5: P35 = level; break;
+        case 6: P36 = level; break;
+        case 7: P37 = level; break;
+        default: break;
+        }
+        break;        
+    case 5:
+        switch (io->mask)
+        {
+        case 0: P50 = level; break;
+        case 1: P51 = level; break;
+        case 2: P52 = level; break;
+        case 3: P53 = level; break;
+        case 4: P54 = level; break;
+        case 5: P55 = level; break;
+        case 6: P56 = level; break;
+        case 7: P57 = level; break;                
+        default: break;
+        }
+        break;    
     default:
         break;
     }

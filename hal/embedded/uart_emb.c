@@ -10,6 +10,7 @@ static void uart_delay(void) { _nop_(); }   /* tiny wait helper */
  * ----------------------------------------------------------------*/
 void hal_uart_init()
 {
+#if UART_ENABLE     
     /* ---------- GPIO ---------- */
     P_SW1 &= 0x3F;      // 选择串口1引脚：P3.0(RxD)和P3.1(TxD)
 
@@ -58,6 +59,8 @@ void hal_uart_init()
     T2L   = 0x70;
     AUXR |=  T2R;                  /* T2R   = 1 → 启动 T2           */
 #endif
+
+#endif
 }
 
 /* ----------------------------------------------------------------
@@ -65,9 +68,11 @@ void hal_uart_init()
  * ----------------------------------------------------------------*/
 void hal_uart_send_byte(u8 ch)
 {    
+#if UART_ENABLE      
     SBUF = ch;
     while(!TI);             /* wait previous byte */    
     TI = 0;    
+#endif
 }
 
 /* ----------------------------------------------------------------
@@ -75,10 +80,12 @@ void hal_uart_send_byte(u8 ch)
  * ----------------------------------------------------------------*/
 void hal_uart_send_buf(const u8 *buf)
 {
+#if UART_ENABLE  
     while(*buf)
     {
         hal_uart_send_byte(*buf++);
     }
+#endif
 }
 
 #endif  /* PLATFORM_QT */

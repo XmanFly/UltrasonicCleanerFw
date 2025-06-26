@@ -7,8 +7,12 @@
 #define ADC_MAX_CNT     1023u     /* 10-bit */
 #define BGV_mV          1190u     /* 典型 1.19 V */
 
-static volatile u16 batt_mV = 0u;          /* 最近一次结果 */
-static volatile u16 batt_raw_mV = 0u;          /* 电池IO原始数值 最近一次结果 */
+// 电压检测去抖
+#define FILTER_DELTA      50u       /* 50mV 阈值 */
+#define CONFIRM_COUNT      3u       /* 连续超阈值次数，3×100ms = 300ms 确认跳变 */
+static volatile u8  confirm_cnt   = 0u;  /* 跳变确认计数 */
+
+static volatile u16 batt_mV = 0u;          /* 当前稳定电压 */
 
 /* --------------- 私有函数 --------------- */
 static u16 adc_avg(u8 ch)
@@ -32,7 +36,8 @@ void hal_battery_init(void)
     P3M1 |= (1<<6);
 }
 
-void hal_battery_task(void)
+/* ---- 读取一次电池电压（mV） ---- */
+static u16 read_batt_mv(void)
 {
     volatile u16 bg_raw     = 0u;
     volatile u16 bat_raw    = 0u;
@@ -45,7 +50,7 @@ void hal_battery_task(void)
     if(bg_raw == 0u)
     {
         print("hal bg_raw 0!\n");
-        return;                    /* 避免除零 */
+        return 0;                    /* 避免除零 */
     }
     bat_raw = adc_avg(ADC_BATT_CH);
 
@@ -54,8 +59,40 @@ void hal_battery_task(void)
     vinRaw_mv  = (u32)bat_raw * vcc_mv / ADC_MAX_CNT;
     vin_mv  = vinRaw_mv * (BAT_R1_KOHM + BAT_R2_KOHM) / BAT_R2_KOHM;
 
-    batt_raw_mV = (u16)vinRaw_mv;
-    batt_mV = (u16)vin_mv;
+    return vinRaw_mv;
+}
+
+
+void hal_battery_task(void)
+{
+    u16 new_mv, diff;
+
+    new_mv = read_batt_mv();
+
+
+    /* 计算与上次稳定值的绝对差 */
+    if (new_mv > batt_mV)
+        diff = new_mv - batt_mV;
+    else
+        diff = batt_mV - new_mv;
+
+    if (diff <= FILTER_DELTA)
+    {
+        /* 小于阈值，认为是真正的小幅变化，立即更新 */
+        batt_mV = new_mv;
+        confirm_cnt = 0u;
+    }
+    else
+    {
+        /* 大于阈值，先累加确认计数，连续 N 次才更新 */
+        confirm_cnt++;
+        if (confirm_cnt >= CONFIRM_COUNT)
+        {
+            batt_mV = new_mv;
+            confirm_cnt = 0u;
+        }
+        print("hal_battery_task new_mv %u cnt %bu", new_mv, confirm_cnt);
+    }
 
     // print("hal_battery_task bg_raw %u bat_raw %u vcc_mv %lu vinRaw_mv %lu vin_mv %lu\n",
     //         bg_raw, bat_raw, vcc_mv, vinRaw_mv, vin_mv);
@@ -63,8 +100,7 @@ void hal_battery_task(void)
 
 u16 hal_battery_get_mv(void)
 {
-    return batt_raw_mV;
-    //return batt_mV;
+    return batt_mV;
 }
 
 u8 hal_battery_get_percent(void)

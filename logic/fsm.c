@@ -75,11 +75,11 @@ static void enter(st_t s)
     switch(s)
     {
     case OFF:
-        led_sm_off(LED_CH_RED);
-        led_sm_off(LED_CH_BLUE);
+       led_sm_off(LED_CH_RED);
+       led_sm_off(LED_CH_BLUE);
     //    led_sm_const(LED_CH_RED, 50);
-    //   led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
-    // led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
+//       led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
+    //  led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
         break;
 
     case WORK:
@@ -189,7 +189,7 @@ void fsm_loop(void)
                     print("fsm OFF: mv ok\r\n");
                     enter(WORK);
                 } else {
-                    print("fsm OFF: mv low %lu\r\n", hal_battery_get_mv());
+                    print("fsm OFF: mv low %u\r\n", hal_battery_get_mv());
                     enter(LOW);
                 }
             } else {

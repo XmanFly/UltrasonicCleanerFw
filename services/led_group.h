@@ -6,13 +6,19 @@ extern "C" {
 #endif
 
 #include "common/types.h"
+#include "common/platform.h"
 
 /* ----------（可根据硬件修改）---------- */
 /* 1) 组数 */
 #define LED_GROUP_CNT          2           /* 红、蓝 */
 
 /* 2) 每组最大灯数（所有组共用同一上限） */
-#define LED_RED_GROUP_CNT        6           /* 红灯组内灯个数 */
+#if !UART_ENABLE   
+#define LED_RED_GROUP_CNT        9           /* 红灯组内灯个数 */
+#else
+#define LED_RED_GROUP_CNT        8
+#endif
+
 #define LED_BLUE_GROUP_CNT       1           /* 蓝灯组内灯个数 */
 
 /* 3) 每只 LED 连接的物理 IO（线性编号 0..TOTAL-1）

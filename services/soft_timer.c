@@ -53,7 +53,7 @@ void soft_timer_tick_1ms(void)
     int i;
     
 #ifdef __C51__
-    P11 = 1;
+    // P11 = 1;
 #endif
 
     for(i = 0; i < MAX_TMR; i++) {
@@ -63,7 +63,7 @@ void soft_timer_tick_1ms(void)
     }
 
 #ifdef __C51__
-    P11 = 0;
+    // P11 = 0;
 #endif
 
 }

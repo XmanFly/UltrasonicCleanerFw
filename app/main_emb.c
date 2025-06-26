@@ -8,7 +8,9 @@
 #include "STC8H.h"
 
 void main(void){    
-    // hal_uart_init();
+#if UART_ENABLE
+    hal_uart_init();
+#endif
     fsm_init();
     hal_time_init();
     hal_battery_init();
