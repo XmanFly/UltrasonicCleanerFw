@@ -315,6 +315,13 @@ void fsm_loop(void)
             enter(OFF);
             break;
         }
+        if(hal_battery_get_mv() < CHARG_LOW_MV) {
+            enter(CHARGE_LOW);
+            break;
+        } else if (hal_battery_get_mv() < FULL_MV) {
+            enter(CHARGE_MID);
+            break;
+        } 
         break;
 
     case LOW:

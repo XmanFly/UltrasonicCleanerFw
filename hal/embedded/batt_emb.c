@@ -84,6 +84,7 @@ void hal_battery_task(void)
         /* 小于阈值，认为是真正的小幅变化，立即更新 */
         batt_mV = new_mv;
         confirm_cnt = 0u;
+        print("hal_battery_task new_mv %u", new_mv);
     }
     else
     {
