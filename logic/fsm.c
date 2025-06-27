@@ -6,6 +6,7 @@
 #include "hal/ultrasonic.h"
 #include "hal/battery.h"
 #include "hal/uart.h"
+#include "hal/power.h"
 
 #ifdef __C51__
 #include "include/STC8H.h"
@@ -53,7 +54,10 @@ void fsm_init(void)
     led_sm_init();
     touch_service_init();
     timer_int();
-    enter(OFF);
+    power_init();
+
+    led_sm_off(LED_CH_RED);
+    led_sm_off(LED_CH_BLUE);
 }
 
 /* -------- state transition helper -------- */
@@ -102,6 +106,7 @@ static void enter(st_t s)
 
     case FINISH:
         t_tmp = timer_start(1000, to_off, 0);
+		power_off(); // 断电
         break;
 
     case ABN:
@@ -123,6 +128,9 @@ static void exit(st_t cur)
 #endif
     switch(cur)
     {
+    case OFF:
+    	power_on();
+
     case WORK:
         /* stop ultrasonic generator */
         hal_us_stop();
@@ -158,7 +166,6 @@ static void exit(st_t cur)
         /* abnormal state cleanup (if any future resource) */
         break;
 
-    case OFF:
     default:
         /* OFF and unknown states need no extra cleanup */
         break;
@@ -206,6 +213,7 @@ void fsm_loop(void)
         if(tev == TOUCH_EVT_PRESS_2S)
         {
             enter(FINISH);
+            print("fsm_loop work TOUCH_EVT_PRESS_2S\n");
         }
 		{
 			u16 mv = hal_battery_get_mv();

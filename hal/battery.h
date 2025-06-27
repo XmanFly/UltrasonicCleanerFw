@@ -8,15 +8,11 @@ extern "C" {
 #include "common/types.h"
 
 /* ----------- 可调宏区 ----------- */
-#ifndef BAT_SAMPLE_NUM
-#define BAT_SAMPLE_NUM   4u      /* 每个通道平均次数(1~32), 越大越稳但越慢 */
-#endif
-#ifndef BAT_R1_KOHM
-#define BAT_R1_KOHM     100u     /* 电池+ → P3.6 上拉电阻(kΩ) */
-#endif
-#ifndef BAT_R2_KOHM
-#define BAT_R2_KOHM      33u     /* P3.6 → GND 下拉电阻(kΩ) */
-#endif
+#define BAT_SAMPLE_NUM   8u      /* 每个通道平均次数(1~32), 越大越稳但越慢 */
+#define BAT_R1_KOHM     51u     /* 电池+ → P3.6 上拉电阻(kΩ) */
+#define BAT_R2_KOHM      51u     /* P3.6 → GND 下拉电阻(kΩ) */
+#define BAT_VOL_RATIO    2u     /* (BAT_R1_KOHM + BAT_R2_KOHM) / BAT_R2_KOHM */
+
 /* -------------------------------- */
 
 void  hal_battery_init(void);

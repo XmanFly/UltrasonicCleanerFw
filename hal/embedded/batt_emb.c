@@ -57,9 +57,9 @@ static u16 read_batt_mv(void)
     /* ---------- 计算 ---------- */
     vcc_mv  = (u32)BGV_mV * ADC_MAX_CNT / bg_raw;
     vinRaw_mv  = (u32)bat_raw * vcc_mv / ADC_MAX_CNT;
-    vin_mv  = vinRaw_mv * (BAT_R1_KOHM + BAT_R2_KOHM) / BAT_R2_KOHM;
+    vin_mv  = vinRaw_mv * (u32)BAT_VOL_RATIO;
 
-    return vinRaw_mv;
+    return vin_mv;
 }
 
 

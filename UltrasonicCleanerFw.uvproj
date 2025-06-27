@@ -551,6 +551,16 @@
               <FileType>5</FileType>
               <FilePath>.\hal\adc.h</FilePath>
             </File>
+            <File>
+              <FileName>power_emb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\hal\embedded\power_emb.c</FilePath>
+            </File>
+            <File>
+              <FileName>power.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\hal\power.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
