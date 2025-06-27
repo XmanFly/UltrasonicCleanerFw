@@ -30,6 +30,8 @@ void hal_time_init(void)
 	TF0 = 0;				//清除TF0标志
 	TR0 = 1;				//定时器0开始计时
     ET0 = 1;             // 使能 Timer-0 中断
+
+    //10us@11.0592MHz
 }
 
 void timer0_isr(void) interrupt 1 using 1
@@ -58,7 +60,9 @@ void timer0_isr(void) interrupt 1 using 1
     }
 
     // 放到LED状态机模块后面，保证本周期参数正常执行
+    // P11 = 1;
     soft_pwm_tick();
+    // P11 = 0;
 
     // P11 = 0;
 }

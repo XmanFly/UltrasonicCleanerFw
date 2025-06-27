@@ -4,6 +4,16 @@
 
 #define LED_ACTIVE_LEVEL   1 /* 1 = 高电平点亮；0 = 低电平点亮 */
 
+#if !UART_ENABLE    
+	{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {3, 1}, {5, 4}
+#else
+    #define LED_RED_MASK_P1 0xFC
+    #define LED_RED_MASK_P3 0
+    #define LED_RED_MASK_P5 0x10
+    #define LED_BLUE_MASK_P1 0x01
+#endif
+
+
 /* ==== ★  硬件IO ★ ==== */
 data volatile const LedIo_t red_group[LED_RED_GROUP_CNT] = {
 #if !UART_ENABLE    
@@ -84,31 +94,37 @@ void hal_led_set_io(LedIo_t *io, u8 level)
 
 void hal_led_set_group(u8 grp, u8 level)
 {
-    volatile u8 grp_bk = grp;
-    volatile u8 level_bk = level;
-	volatile u8 i;
-    volatile LedIo_t *grpArr;
-    volatile u8 grpSize;
-    
-	if (grp_bk >= LED_GROUP_CNT) return;
+    P11 = 1;
 
-    switch (grp_bk)
+	if (grp >= LED_GROUP_CNT) return;
+
+    switch (grp)
     {
     case 0: 
-        grpArr = red_group;
-        grpSize = LED_RED_GROUP_CNT;
+        if(level) {
+            P1 |= LED_RED_MASK_P1;
+            P3 |= LED_RED_MASK_P3;
+            P5 |= LED_RED_MASK_P5;
+        } else {
+            P1 &= ~LED_RED_MASK_P1;
+            P3 &= ~LED_RED_MASK_P3;
+            P5 &= ~LED_RED_MASK_P5;
+        }
         break;
     case 1: 
-        grpArr = blue_group;
-        grpSize = LED_BLUE_GROUP_CNT;
+        if(level) {
+            P1 |= LED_RED_MASK_P1;
+            P3 |= LED_RED_MASK_P3;
+            P5 |= LED_RED_MASK_P5;
+        } else {
+            P1 |= LED_BLUE_MASK_P1;
+        }
         break;
     default:
         break;
     }
 
-    for(i=0; i<grpSize; i++) {
-        hal_led_set_io(&grpArr[i], level_bk);
-    }
+    P11 = 0;
 
     // print("hal_led_set id %bu level %bu\n", grp, level);    
 }
