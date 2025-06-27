@@ -13,7 +13,7 @@ extern "C" {
 #define LED_CH_BLUE    1
 
 /* -------- 几种呼吸频率参数 -------- */
-#define BREATH_NORMAL    24
+#define BREATH_NORMAL    10
 #define BREATH_FAST		 1
 
 /* -------- 状态机支持的模式 -------- */
@@ -33,7 +33,7 @@ void led_sm_breathe (u8 ch, u8 speed_div);           /* 呼吸周期 分频系�
 void led_sm_blink   (u8 ch, u8 pct0_100,
                      u16 on_ms, u16 off_ms);         /* 闪烁 */
 
-void led_sm_tick_2ms(void);   /* 需在 2 ms 定时调度里调用 */
+void led_sm_tick(void);   /* 需在 2 ms 定时调度里调用 */
 
 #ifdef PLATFORM_QT
 typedef void (*led_sm_cb_tb)(u8 ch, u8 mode, u8 speed);

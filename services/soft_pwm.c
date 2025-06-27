@@ -29,7 +29,7 @@ void soft_pwm_set_level(u8 id, u8 lv)
     // print("soft_pwm_set_level id %bu lv %bu\n", id, lv);
 }
 
-void soft_pwm_tick_1ms(void)
+void soft_pwm_tick(void)
 {
     volatile u8 i;
     if (tick == 0) {                    /* 帧起点, 此处保证了16帧里面数值不变 */

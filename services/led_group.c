@@ -3,14 +3,26 @@
 #include "common/platform.h"
 #include "hal/led.h"
 
-#define TABLE_SIZE 64
+#define TABLE_SIZE 256
 
 /* √4-bit 半正弦 + γ≈sqrt  LUT */
 static code const u8 lut[TABLE_SIZE] = {
-      1,1,1,1,1,2,2,3,3,4,4,5,5,6,6,7,
-      7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,
-     15,15,15,15,15,14,14,13,13,12,12,11,11,10,10,9,
-      9,8,8,7,7,6,6,5,5,4,4,3,3,2,2,1
+    0,  0,  1,  1,  2,  2,  2,  3,  3,  3,  4,  4,  5,  5,  5,  6,
+    6,  6,  7,  7,  8,  8,  8,  9,  9,  9, 10, 10, 10, 11, 11, 12,
+    12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15, 16, 16, 16, 17, 17,
+    17, 18, 18, 18, 19, 19, 19, 19, 20, 20, 20, 21, 21, 21, 21, 22,
+    22, 22, 23, 23, 23, 23, 24, 24, 24, 24, 25, 25, 25, 25, 25, 26,
+    26, 26, 26, 26, 27, 27, 27, 27, 27, 28, 28, 28, 28, 28, 28, 29,
+    29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+    30, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+    31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 30,
+    30, 30, 30, 30, 30, 30, 30, 30, 30, 29, 29, 29, 29, 29, 29, 29,
+    29, 28, 28, 28, 28, 28, 28, 27, 27, 27, 27, 27, 26, 26, 26, 26,
+    26, 25, 25, 25, 25, 25, 24, 24, 24, 24, 23, 23, 23, 23, 22, 22,
+    22, 21, 21, 21, 21, 20, 20, 20, 19, 19, 19, 19, 18, 18, 18, 17,
+    17, 17, 16, 16, 16, 15, 15, 15, 14, 14, 14, 13, 13, 13, 12, 12,
+    12, 11, 11, 10, 10, 10,  9,  9,  9,  8,  8,  8,  7,  7,  6,  6,
+     6,  5,  5,  5,  4,  4,  3,  3,  3,  2,  2,  2,  1,  1,  0,  0
 };
 
 typedef struct {
@@ -24,10 +36,10 @@ typedef struct {
 
 static volatile grp_t g[LED_GROUP_CNT];
 
-/* -- 将 4-bit 亮度写入整个组 (软 PWM 0-127) -- */
-static void put_lvl(u8 grp, u8 lv4)
+/* -- 将亮度写入整个组 (软 PWM 0-127) -- */
+static void put_lvl(u8 grp, u8 lv)
 {
-    u8 duty = lv4;           /* ×8 */
+    u8 duty = lv;           /* ×8 */
     soft_pwm_set_level(grp, duty);
     
     // print("put_lvl id %bu duty %bu base %bu cnt %bu\n", grp_backup, lv4_backup, base, cnt);
@@ -69,7 +81,7 @@ void led_group_set_breathe(u8 grp, u8 div)
     g[grp].mode = LG_MODE_BREATHE;
 }
 
-void led_group_tick_2ms(void)
+void led_group_tick(void)
 {
     volatile u8 i;
     volatile u8 duty;
@@ -82,8 +94,8 @@ void led_group_tick_2ms(void)
             // print("LG_MODE_OFF end\n");
             break;
         case LG_MODE_CONST: {            
-            duty = g[i].pct;   /* 0-127 */
-            put_lvl(i, duty);                   /* 转 4-bit */
+            duty = g[i].pct * 32u / 100u; 
+            put_lvl(i, duty);
             break;
         }
         case LG_MODE_BREATHE:

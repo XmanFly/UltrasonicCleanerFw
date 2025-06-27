@@ -19,6 +19,8 @@ void main(void){
     EA=1;
 
 	while(1) {
+        // P11 = 1;
+
         fsm_loop(); // 主状态机
 
         // 电池任务
@@ -26,5 +28,7 @@ void main(void){
             batt_due = 0;
             hal_battery_task(); 
         }        
+
+        // P11 = 0;
     }
 }

@@ -15,7 +15,6 @@ void hal_time_tick_1ms(void)
 {
     soft_timer_tick_1ms();
     touch_service_tick_1ms();
-    soft_pwm_tick_1ms();
 
     static u8 slice2ms = 0;
     if(++slice2ms >= 2) {

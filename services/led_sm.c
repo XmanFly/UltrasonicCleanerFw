@@ -148,7 +148,7 @@ void led_sm_blink(u8 ch, u8 pct, u16 on_ms, u16 off_ms)
 
 }
 
-void led_sm_tick_2ms(void)
+void led_sm_tick(void)
 {
     volatile u8 i;
     for (i = 0; i < LED_GROUP_CNT; ++i) {
@@ -160,7 +160,7 @@ void led_sm_tick_2ms(void)
             }
         }
     }
-    led_group_tick_2ms();    /* 更新呼吸曲线 */
+    led_group_tick();    /* 更新呼吸曲线 */
 }
 
 #ifdef PLATFORM_QT

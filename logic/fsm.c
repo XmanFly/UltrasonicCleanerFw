@@ -81,7 +81,7 @@ static void enter(st_t s)
     case OFF:
        led_sm_off(LED_CH_RED);
        led_sm_off(LED_CH_BLUE);
-    //    led_sm_const(LED_CH_RED, 50);
+    //    led_sm_const(LED_CH_RED, 2);
 //       led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
     //  led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
         break;

@@ -16,7 +16,7 @@ extern "C" {
 #if !UART_ENABLE   
 #define LED_RED_GROUP_CNT        9           /* 红灯组内灯个数 */
 #else
-#define LED_RED_GROUP_CNT        8
+#define LED_RED_GROUP_CNT        7
 #endif
 
 #define LED_BLUE_GROUP_CNT       1           /* 蓝灯组内灯个数 */
@@ -52,7 +52,7 @@ void led_group_set_mode   (u8 grp, lg_mode_e m);      /* 只改模式 */
 void led_group_set_const  (u8 grp, u8 pct0_100);      /* 恒亮 %  */
 void led_group_set_breathe(u8 grp, u8 speed_div);     /* 1=128 ms */
 
-void led_group_tick_2ms(void);   /* 需在 2 ms 节拍里调用 */
+void led_group_tick(void);   /* 需在 2 ms 节拍里调用 */
 
 #ifdef __cplusplus
 }   /* extern "C" */

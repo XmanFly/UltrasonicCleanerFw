@@ -9,7 +9,7 @@ data volatile const LedIo_t red_group[LED_RED_GROUP_CNT] = {
 #if !UART_ENABLE    
 	{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {3, 1}, {5, 4}
 #else
-    {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {5, 4}
+    {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {5, 4}
 #endif
 };					
 data volatile const LedIo_t blue_group[LED_BLUE_GROUP_CNT] = {
