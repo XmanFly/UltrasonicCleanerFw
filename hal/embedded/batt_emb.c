@@ -34,6 +34,9 @@ void hal_battery_init(void)
     ADC_Init();                    /* ADCCFG 默认 0x20 → Fadc = Fosc/6 ≈ 1.843 MHz */
     P3M0 &= ~(1<<6);               /* P3.6 高阻输入 */
     P3M1 |= (1<<6);
+
+    P3M0 &= ~0x10;  // 适配器连接口
+    P3M1 |= 0x10;
 }
 
 /* ---- 读取一次电池电压（mV） ---- */
@@ -112,5 +115,5 @@ u8 hal_battery_get_percent(void)
 
 u8 hal_battery_is_chg(void)
 {
-	return 0;
+	return P34;
 }

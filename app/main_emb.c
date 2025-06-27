@@ -11,9 +11,9 @@ void main(void){
 #if UART_ENABLE
     hal_uart_init();
 #endif
+    hal_battery_init(); // 必须放在定时器0初始化前面，初始化延时用的定时器0
     fsm_init();
     hal_time_init();
-    hal_battery_init();
     hal_us_init();
 	
     EA=1;

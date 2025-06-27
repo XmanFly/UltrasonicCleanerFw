@@ -52,7 +52,6 @@ Item {
         // 透明度动画
         SequentialAnimation {
             id: breathAnim
-//            running: ledState === 2
             loops: Animation.Infinite
             NumberAnimation {
                 target: rect; property: "opacity"

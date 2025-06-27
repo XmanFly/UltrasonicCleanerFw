@@ -39,7 +39,7 @@ void timer0_isr(void) interrupt 1 using 1
     if (++us_count >= 2) {   // 每 1 ms 置位一次
         us_count = 0;
 
-        P11 = !P11;
+        // P11 = !P11;
         
         // 1ms执行一次任务
 	    hal_time_tick_1ms();

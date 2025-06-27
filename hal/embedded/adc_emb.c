@@ -1,6 +1,8 @@
 #include "hal/adc.h"
 #include "include/STC8H.h"  /* STC8H1K08 寄存器定义 */
 
+static void delay2ms_StartUp(void);
+
 /**
  * ADC_Init
  * - 10 位分辨率（RESFMT=0）
@@ -21,6 +23,8 @@ void ADC_Init(void)
 
     // 使能 ADC（ADEN=1），清 ADST/ADIF
     ADC_CONTR = ADC_POWER;  // 0x80
+
+    delay2ms_StartUp();
 }
 
 /**
@@ -50,4 +54,20 @@ u16 ADC_Read(void)
 
     // 高 8 位在 ADC_RES，低 2 位在 ADC_RESL[1:0]
     return ((u16)ADC_RES << 2) | (ADC_RESL & 0x03);
+}
+
+
+void delay2ms_StartUp(void) {
+    // 用定时器0 延时2ms
+	AUXR |= 0x80;			//定时器时钟1T模式
+	TMOD &= 0xF0;			//设置定时器模式
+	TL0 = 0x9A;				//设置定时初始值
+	TH0 = 0xA9;				//设置定时初始值
+	TF0 = 0;				//清除TF0标志
+	TR0 = 1;				//定时器0开始计时
+    // 忙等溢出
+    while (!TF0) ;
+    // 停计数，清标志
+    TR0 = 0;
+    TF0 = 0;
 }
