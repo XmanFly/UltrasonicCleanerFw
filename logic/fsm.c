@@ -81,10 +81,12 @@ static void enter(st_t s)
     case OFF:
        led_sm_off(LED_CH_RED);
        led_sm_off(LED_CH_BLUE);
-		hal_us_start();
+       power_off(); // 断电
+#if 0
     //    led_sm_const(LED_CH_RED, 2);
 //       led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
     //  led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
+#endif
         break;
 
     case WORK:
@@ -107,7 +109,6 @@ static void enter(st_t s)
 
     case FINISH:
         t_tmp = timer_start(1000, to_off, 0);
-		power_off(); // 断电
         break;
 
     case ABN:
@@ -130,7 +131,6 @@ static void exit(st_t cur)
     switch(cur)
     {
     case OFF:
-    	power_on();
 
     case WORK:
         /* stop ultrasonic generator */
@@ -200,6 +200,7 @@ void fsm_loop(void)
                     print("fsm OFF: mv low %u\r\n", hal_battery_get_mv());
                     enter(LOW);
                 }
+                power_on(); // 上电
             } else {
                 print("fsm OFF: in charge\r\n");
             }

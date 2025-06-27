@@ -39,6 +39,15 @@ Window {
             }
 
             Text {
+                text: "供电自锁"
+            }
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: SimViewModel.power ? "已锁定" : "未锁定"
+                color: SimViewModel.power ? "greeen" : "red"
+            }
+
+            Text {
                 text: "适配器"
             }
             Switch {
