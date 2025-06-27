@@ -1,4 +1,5 @@
 #include "common/platform.h"
+#include "hal/power.h"
 
 void power_init()
 {

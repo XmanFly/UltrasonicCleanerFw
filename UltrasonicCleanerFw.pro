@@ -9,6 +9,7 @@ release: DEFINES += QT_MESSAGELOGCONTEXT
 
 SOURCES += \
     hal/sim/led_sim.c \
+    hal/sim/power_sim.c \
     hal/sim/us_sim.c \
     hal/sim/batt_sim.c \
     hal/sim/touch_sim.c \
@@ -29,6 +30,7 @@ HEADERS += \
     common/types.h \
     hal/battery.h \
     hal/led.h \
+    hal/power.h \
     hal/time.h \
     hal/touch.h \
     hal/ultrasonic.h \

@@ -130,6 +130,19 @@ void SimViewModel::setRedLedState(int newRedLedState)
     emit redLedStateChanged();
 }
 
+bool SimViewModel::power() const
+{
+    return m_power;
+}
+
+void SimViewModel::setPower(bool newPower)
+{
+    if (m_power == newPower)
+        return;
+    m_power = newPower;
+    emit powerChanged();
+}
+
 int SimViewModel::blueLedState() const
 {
     return m_blueLedState;
@@ -168,5 +181,10 @@ void SimViewModel::onSetLedCallback(u8 id, u8 type, u8 speed)
     default:
         break;
     }
+}
+
+void SimViewModel::onSetPower(u8 on)
+{
+    g_self->setPower(on);
 }
 

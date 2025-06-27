@@ -43,8 +43,7 @@ void timer0_isr(void) interrupt 1 using 1
         
         // 1ms执行一次任务
 	    hal_time_tick_1ms();
-
-        led_sm_tick();
+        
 
         // 2ms执行一次任务
         if(++slice2ms >= 2) {
@@ -71,6 +70,7 @@ void hal_time_tick_1ms(void)
     hal_us_tick_1ms();        /* 推进扫频状态机 */
     soft_timer_tick_1ms();
     touch_service_tick_1ms();
+	led_sm_tick();
 	    
 
     // P11 = 0;

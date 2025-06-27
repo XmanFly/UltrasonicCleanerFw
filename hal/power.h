@@ -15,8 +15,8 @@ void power_off();
 
 #ifdef PLATFORM_QT
 /* -------- 事件回调钩子 -------- */
-typedef void (*power_cb_tb)(u8 id, u8 on);
-void power_set_callback(led_cb_tb cb);
+typedef void (*power_cb_tb)(u8 on);
+void power_set_callback(power_cb_tb cb);
 #endif
 
 

@@ -17,6 +17,7 @@
 #include "hal/touch.h"
 #include "hal/time.h"
 #include "hal/led.h"
+#include "hal/power.h"
 #include "services/soft_timer.h"
 #include "sim/simviewmodel.h"
 #include "sim/timerworker.h"
@@ -53,7 +54,7 @@ void fwInit(QObject *parent, SimViewModel *simViewModel, WaveEmitter *waveEmitte
     fsm_set_callback(simViewModel->onEnterFsmStateCallback);
     led_sm_set_callback(simViewModel->onSetLedCallback);
     led_set_callback(waveEmitter->onEmitIO);
-
+    power_set_callback(simViewModel->onSetPower);
 
     QTimer *loopTimer = new QTimer(parent);
     loopTimer->callOnTimeout([](){
@@ -67,7 +68,7 @@ void fwInit(QObject *parent, SimViewModel *simViewModel, WaveEmitter *waveEmitte
     QObject::connect(tick1MsTh, &QThread::started, tick1MsTimer, &TimerWorker::init);
     QObject::connect(tick1MsTimer, &TimerWorker::tick,
                      [](){
-        hal_time_tick_1ms();
+        hal_time_tick();
     }); // QueuedConnection
     tick1MsTh->start();
 }
