@@ -3,8 +3,8 @@
 #include "common/platform.h"
 
 typedef struct {
-    u8 target;      /* 0-15 */
-    u8 duty;        /* 本帧占空 0-15 */
+    u8 target;      /* 亮度等级 */
+    u8 duty;        /* 本帧占空  */
 } pwm_t;
 
 static pwm_t ledGroup[LED_GROUP_CNT];

@@ -9,8 +9,8 @@ extern "C" {
 #include "led_group.h"        /* 为获取 LED_TOTAL 宏 */
 
 #define LED_NUM             LED_TOTAL   /* 逻辑 LED 总数 */
-#define PWM_FRAME_TICKS     32         
-#define LED_LEVEL_MAX       32         /* 32级  */
+#define LED_LEVEL_MAX       128
+#define PWM_FRAME_TICKS     LED_LEVEL_MAX         
 
 void soft_pwm_init(void);
 void soft_pwm_set_level(u8 id, u8 level_0_127);   /* 任意占空 */

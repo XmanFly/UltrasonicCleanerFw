@@ -4,19 +4,10 @@
 
 #define LED_ACTIVE_LEVEL   1 /* 1 = 高电平点亮；0 = 低电平点亮 */
 
-#if !UART_ENABLE    
-	{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {3, 1}, {5, 4}
-#else
-    #define LED_RED_MASK_P1 0xFC
-    #define LED_RED_MASK_P3 0
-    #define LED_RED_MASK_P5 0x10
-    #define LED_BLUE_MASK_P1 0x01
-#endif
-
 
 /* ==== ★  硬件IO ★ ==== */
 data volatile const LedIo_t red_group[LED_RED_GROUP_CNT] = {
-#if !UART_ENABLE    
+#ifdef RELEASE    
 	{1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {3, 1}, {5, 4}
 #else
     {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {5, 4}
@@ -94,37 +85,47 @@ void hal_led_set_io(LedIo_t *io, u8 level)
 
 void hal_led_set_group(u8 grp, u8 level)
 {
-    P11 = 1;
-
 	if (grp >= LED_GROUP_CNT) return;
 
     switch (grp)
     {
     case 0: 
         if(level) {
-            P1 |= LED_RED_MASK_P1;
-            P3 |= LED_RED_MASK_P3;
-            P5 |= LED_RED_MASK_P5;
+            P12 = 1;
+            P13 = 1;
+            P14 = 1;
+            P15 = 1;
+            P16 = 1;
+            P17 = 1;
+            P54 = 1;
+#ifdef RELEASE  
+            P11 = 1;
+            P31 = 1;
+#endif
         } else {
-            P1 &= ~LED_RED_MASK_P1;
-            P3 &= ~LED_RED_MASK_P3;
-            P5 &= ~LED_RED_MASK_P5;
+            P12 = 0;
+            P13 = 0;
+            P14 = 0;
+            P15 = 0;
+            P16 = 0;
+            P17 = 0;
+            P54 = 0;
+#ifdef RELEASE  
+            P11 = 0;
+            P31 = 0;
+#endif            
         }
         break;
     case 1: 
         if(level) {
-            P1 |= LED_RED_MASK_P1;
-            P3 |= LED_RED_MASK_P3;
-            P5 |= LED_RED_MASK_P5;
+            P10 = 1;
         } else {
-            P1 |= LED_BLUE_MASK_P1;
+            P10 = 0;
         }
         break;
     default:
         break;
     }
-
-    P11 = 0;
 
     // print("hal_led_set id %bu level %bu\n", grp, level);    
 }

@@ -27,6 +27,7 @@
         "time.h": "c",
         "adc.h": "c",
         "battery.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "led_group.h": "c"
     }
 }

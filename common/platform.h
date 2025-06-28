@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-#define UART_ENABLE 1
-#define PRINT 1
-
+#define RELEASE // 调试版 发布时注释
+#define UART_ENABLE 0
+#define PRINT 0
 
 #ifdef PLATFORM_QT
     #include <stdio.h>
