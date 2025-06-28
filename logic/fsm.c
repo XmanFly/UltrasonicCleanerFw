@@ -13,11 +13,12 @@
 #endif
 
 #define LOW_MV   2900 // 工作过程中低于此电压 蓝灯快闪
-#define WORK_MV  3000 // 可工作最低电压
+#define WORK_MV  2800 // 可工作最低电压
 #define FULL_MV  4200 // 满电量电压
 #define CHARG_LOW_MV  2800 // 充电时 低于此电量 红灯快闪
 #define CHARG_MID_MV  3500 // 充电时 高于此电量 红灯正常闪烁
-#define CLEAN_MS 30000u // 清洗时间
+#define CLEAN_MS 6000u // 清洗时间
+#define CLEAN_LOW_WARN 6000u // 工作时低电压清洗时间
 
 typedef enum {
     OFF, // 关机
@@ -114,7 +115,7 @@ static void enter(st_t s)
 
     case LOW:
         led_sm_breathe(LED_CH_RED, BREATH_FAST);
-        t_tmp = timer_start(6000, to_off, 0);
+        t_tmp = timer_start(CLEAN_LOW_WARN, to_off, 0);
         break;
 
     case FINISH:
