@@ -25,9 +25,6 @@ void touch_service_tick_1ms(void);
 /* poll one pending event; returns TOUCH_EVT_NONE if empty */
 touch_evt_t touch_service_fetch_event(void);
 
-/* current stable press duration (ms); 0 if key released */
-u16 touch_service_press_ms(void);
-
 #ifdef __cplusplus
 }   /* extern "C" */
 #endif

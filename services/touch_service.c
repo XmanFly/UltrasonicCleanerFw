@@ -49,11 +49,11 @@ void touch_service_tick_1ms(void)
         /* generate threshold events once */
         if(press_ms == 500) {
             evt_buf = TOUCH_EVT_PRESS_500;
-            // print("touch servce TOUCH_EVT_PRESS_500\r\n");
+            print("touch servce TOUCH_EVT_PRESS_500\r\n");
         }
         if(press_ms == 2000) {
             evt_buf = TOUCH_EVT_PRESS_2S;
-            // print("touch servce TOUCH_EVT_PRESS_2S\r\n");
+            print("touch servce TOUCH_EVT_PRESS_2S\r\n");
         }
     }
 }
@@ -63,9 +63,4 @@ touch_evt_t touch_service_fetch_event(void)
     touch_evt_t e = (touch_evt_t)evt_buf;
     evt_buf = TOUCH_EVT_NONE;
     return e;
-}
-
-u16 touch_service_press_ms(void)
-{
-    return stable ? press_ms : 0;
 }

@@ -10,16 +10,12 @@ static volatile u8 key_level  = 0;
 void hal_touch_init(void)
 {
     // P3.2配置成输入口
-    // P3M0 &= ~0x04; P3M1 |= 0x04; 
-
-    // 中断
-    // IT0 = 1;     /* interrupt on falling edge */
-    // IE0 = 0;
-    // EX0 = 1;
+    P3M0 &= ~0x04; 
+    P3M1 |= 0x04; 
 }
 
 u8 hal_touch_is_pressed(void)
 {
-    return (P3 & 0x04) ? 1 : 0;
+    return P32;
 }
 #endif   /* PLATFORM_QT */
