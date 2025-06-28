@@ -254,7 +254,7 @@ void fsm_loop(void)
 			u16 mv = hal_battery_get_mv();
 			if(mv < LOW_MV) {
                 led_sm_breathe(LED_CH_BLUE, BREATH_FAST);
-                print("fsm_loop work bat low %u\n", mv);
+                // print("fsm_loop work bat low %u\n", mv);
             } else if(mv > WORK_MV) {
                 led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
                 // print("fsm_loop work bat high %lu\n", mv);
