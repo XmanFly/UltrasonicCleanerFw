@@ -18,7 +18,7 @@
 #define CHARG_LOW_MV  3200 // 充电时 低于此电量 红灯快闪
 #define CHARG_MID_MV  3500 // 充电时 高于此电量 红灯正常闪烁
 #define CLEAN_MS 180000u // 清洗时间
-#define CLEAN_LOW_WARN 6000u // 工作时低电压清洗时间
+#define CLEAN_LOW_WARN 3000u // 电压过低状态持续时间
 
 typedef enum {
     OFF, // 关机
