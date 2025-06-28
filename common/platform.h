@@ -5,9 +5,10 @@
 extern "C" {
 #endif
 
-#define RELEASE // 调试版 发布时注释
-#define UART_ENABLE 0
-#define PRINT 0
+#define RELEASE // 发布时启用 注意不能与下面两个宏同时启用
+// #define UART_ENABLE // 注意串口使能时，由于100us定时器1被串口占用，
+//                     // 导致pwm任务soft_pwm_tick只能放在1ms定时器中执行，导致呼吸灯节奏异常
+// #define PRINT
 
 #ifdef PLATFORM_QT
     #include <stdio.h>

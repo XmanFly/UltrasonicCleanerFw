@@ -23,7 +23,7 @@ void led_init()
     P1M0 = 0xff; 
     P1M1 = 0x00; 
 
-#if !UART_ENABLE
+#ifndef UART_ENABLE
     P3M0 |= 0x02; 
     P3M1 &= ~0x02; 
 #endif

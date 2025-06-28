@@ -8,7 +8,7 @@
 #include "STC8H.h"
 
 void main(void){    
-#if UART_ENABLE
+#ifdef UART_ENABLE
     hal_uart_init();
 #endif
     hal_battery_init(); // 必须放在定时器0初始化前面，初始化延时用的定时器0

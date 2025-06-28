@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#if UART_ENABLE
+#ifdef UART_ENABLE
 
 /* Initialise UART-1 (STC8H TxD1/P3.4, RxD1/P3.5) to given baud */
 void hal_uart_init();

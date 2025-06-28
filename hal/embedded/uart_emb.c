@@ -3,7 +3,7 @@
 #ifndef PLATFORM_QT
 #include "STC8H.h"
 
-#if UART_ENABLE    
+#ifdef UART_ENABLE
 
 static void uart_delay(void) { _nop_(); }   /* tiny wait helper */
 

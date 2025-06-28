@@ -13,7 +13,7 @@ extern "C" {
 #define LED_GROUP_CNT          2           /* 红、蓝 */
 
 /* 2) 每组最大灯数（所有组共用同一上限） */
-#if !UART_ENABLE   
+#ifndef UART_ENABLE   
 #define LED_RED_GROUP_CNT        9           /* 红灯组内灯个数 */
 #else
 #define LED_RED_GROUP_CNT        7

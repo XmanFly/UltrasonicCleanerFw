@@ -8,7 +8,7 @@ char buf[124];        /* temporary print buffer */
 
 void print(const char *fmt, ...)
 {    
-#if PRINT
+#ifdef PRINT
     va_list args;
 
     va_start(args, fmt);
