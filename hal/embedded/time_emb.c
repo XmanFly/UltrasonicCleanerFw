@@ -29,6 +29,7 @@ void hal_time_init(void)
 	TR0 = 1;				// 定时器0开始计时
     ET0 = 1;                // 使能 Timer-0 中断
 
+#if !UART_ENABLE
     //100us@11.0592MHz
     AUXR |= 0x40;			// 定时器1 时钟1T模式
 	TMOD &= 0x0F;			// 设置定时器模式
@@ -37,6 +38,7 @@ void hal_time_init(void)
 	TF1 = 0;				// 清除TF1标志
 	TR1 = 1;				// 定时器1开始计时
 	ET1 = 1;				// 使能定时器1中断    
+#endif
 }
 
 void timer0_isr(void) interrupt 1 using 1

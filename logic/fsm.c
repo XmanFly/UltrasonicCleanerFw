@@ -19,11 +19,13 @@
 #define CHARG_MID_MV  3500 // 充电时 高于此电量 红灯正常闪烁
 #define CLEAN_MS 180000u // 清洗时间
 #define CLEAN_LOW_WARN 3000u // 电压过低状态持续时间
+#define CHARGE_VOL_STABLE_TIME 1000u // 插上适配器后电压稳定时间
 
 typedef enum {
     OFF, // 关机
     WORK, // 清洗
     FINISH, // 工作完成
+    CHARGE_VOL_STABLE, // 充电等待电压稳定
     CHARGE_INIT, // 充电初始化
     CHARGE_LOW, // 低电量充电
     CHARGE_MID, // 中等电量充电
@@ -41,7 +43,7 @@ static void enter(st_t s);
 static void exit(st_t cur);
 static void clean_done(void) { enter(FINISH); }
 static void to_off(void)     { enter(OFF);   }
-
+static void to_charge_init(void)     { enter(CHARGE_INIT);   }
 
 #ifdef PLATFORM_QT
 static fsm_cb_tb user_cb = 0;
@@ -98,6 +100,10 @@ static void enter(st_t s)
         t_clean = timer_start(CLEAN_MS, clean_done, 0);
         break;
 
+    case CHARGE_VOL_STABLE:
+        t_tmp = timer_start(CHARGE_VOL_STABLE_TIME, to_charge_init, 0);
+        break;
+
     case CHARGE_INIT:
         break;
 
@@ -151,6 +157,10 @@ static void exit(st_t cur)
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
+        break;
+
+    case CHARGE_VOL_STABLE:
+        if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
     case CHARGE_INIT:
@@ -224,7 +234,7 @@ void fsm_loop(void)
         }
 
         if(hal_battery_is_chg()) {
-            enter(CHARGE_INIT);
+            enter(CHARGE_VOL_STABLE);
             break;
         }
         break;
@@ -255,21 +265,30 @@ void fsm_loop(void)
     case FINISH:
         break;
 
+    case CHARGE_VOL_STABLE:
+        if(!hal_battery_is_chg()) {
+            enter(OFF);
+            break;
+        }
+        break;        
+
     case CHARGE_INIT:
         if(hal_battery_is_chg()) {
             if(hal_battery_get_mv() >= FULL_MV)
             {
                 // 电量满
                 enter(CHARGE_FULL);
-                print("fsm_loop work CHARGE_INIT %u\n", hal_battery_get_mv());
+                print("fsm_loop work CHARGE_INIT, enter CHARGE_FULL %u\n", hal_battery_get_mv());
                 break;
             } else {
                 // 根据当前电量 判断进入哪种充电状态
                 if(hal_battery_get_mv() < CHARG_MID_MV) {
                     enter(CHARGE_LOW);
+                    print("fsm_loop work CHARGE_INIT, enter CHARGE_LOW %u\n", hal_battery_get_mv());
                     break;
                 } else {
                     enter(CHARGE_MID);
+                    print("fsm_loop work CHARGE_INIT, enter CHARGE_MID %u\n", hal_battery_get_mv());
                     break;
                 }
             }

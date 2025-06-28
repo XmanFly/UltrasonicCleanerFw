@@ -26,7 +26,7 @@ void hal_time_tick_1ms(void)
     led_sm_tick();
 }
 
-void hal_time_tick()
+void slot_hal_time_tick()
 {
     if (++us_count >= 2) {   // 每 1 ms 置位一次
         us_count = 0;

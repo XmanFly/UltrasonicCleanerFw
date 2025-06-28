@@ -68,7 +68,7 @@ void fwInit(QObject *parent, SimViewModel *simViewModel, WaveEmitter *waveEmitte
     QObject::connect(tick1MsTh, &QThread::started, tick1MsTimer, &TimerWorker::init);
     QObject::connect(tick1MsTimer, &TimerWorker::tick,
                      [](){
-        hal_time_tick();
+        slot_hal_time_tick();
     }); // QueuedConnection
     tick1MsTh->start();
 }
