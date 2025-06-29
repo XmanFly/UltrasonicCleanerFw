@@ -19,7 +19,10 @@ void  hal_battery_init(void);
 void  hal_battery_task(void);            /* 阻塞式, 请在主循环调用 */
 u16   hal_battery_get_mv(void);          /* 返回最近一次毫伏值 */
 u8    hal_battery_get_percent(void);     /* 简单 3.3-4.2 V 线性映射 */
+void  hal_battery_set_port_input();			 /* 设置电池充电引脚输入状态 */
+void  hal_battery_set_port_output();			 /* 设置电池充电引脚输出状态 */
 u8    hal_battery_is_chg(void);			 /* 电池充电中 */
+void  hal_battery_set_chg(u8 on);			 /* 设置电池充电状态 */
 
 #ifdef PLATFORM_QT
 void  hal_battery_sim_set_mv(u16 mv);

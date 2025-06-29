@@ -28,6 +28,7 @@
         "adc.h": "c",
         "battery.h": "c",
         "stdio.h": "c",
-        "led_group.h": "c"
+        "led_group.h": "c",
+        "STC8H.H": "cpp"
     }
 }

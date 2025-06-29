@@ -28,4 +28,9 @@ void hal_battery_sim_set_chg(u8 on)
 {
     chg=on;
 }
+
+void hal_battery_set_chg(u8 on)
+{
+
+}
 #endif

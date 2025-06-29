@@ -35,8 +35,7 @@ void hal_battery_init(void)
     P3M0 &= ~(1<<6);               /* P3.6 高阻输入 */
     P3M1 |= (1<<6);
 
-    P3M0 &= ~0x10;  // 适配器连接口
-    P3M1 |= 0x10;
+    hal_battery_set_port_input();
 }
 
 /* ---- 读取一次电池电压（mV） ---- */
@@ -114,7 +113,26 @@ u8 hal_battery_get_percent(void)
     return (u8)((batt_mV - 3300u) / 9u);  /* 900 mV /100 ≈ 9 mV/格 */
 }
 
+void  hal_battery_set_port_input()
+{
+	// P34高阻输入
+	P3M0 &= ~0x10; 
+	P3M1 |= 0x10; 
+}
+
+void  hal_battery_set_port_output()
+{
+	// P34推挽输出
+	P3M0 |= 0x10;
+	P3M1 &= ~0x10; 
+}
+
 u8 hal_battery_is_chg(void)
 {
 	return P34;
+}
+
+void hal_battery_set_chg(u8 on)
+{
+	P34 = on;
 }
