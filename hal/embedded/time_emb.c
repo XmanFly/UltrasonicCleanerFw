@@ -48,8 +48,8 @@ void timer0_isr(void) interrupt 1 using 1
     // 1ms执行一次任务
     hal_time_tick_1ms();    
 
-    // 500ms执行一次任务
-    if (++ms_count >= 500) {   // 每 500 ms 置位一次
+    // 100ms执行一次任务
+    if (++ms_count >= 100) {   // 每 100 ms 置位一次
         ms_count = 0;
         batt_due = 1; // 电池任务
     }
