@@ -20,7 +20,7 @@
 #define CLEAN_MS 180000u // 清洗时间
 #define CLEAN_LOW_WARN 3000u // 电压过低状态持续时间
 #define CHARGE_VOL_STABLE_TIME 1000u // 插上适配器后电压稳定时间
-#define AD_DELAY_TIME 100u // 延迟300ms 因为AD电压稳定需要800ms，而此处延时300ms，加上用户按钮检测需要500ms，足矣
+#define AD_DELAY_TIME 10u // 延迟300ms 因为AD电压稳定需要800ms，而此处延时300ms，加上用户按钮检测需要500ms，足矣
 
 typedef enum {
     INIT, // 初始化 0
