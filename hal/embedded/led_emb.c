@@ -22,14 +22,17 @@ void led_init()
 {
     P1M0 = 0xff; 
     P1M1 = 0x00; 
+    P1 = 0;
 
 #ifndef UART_ENABLE
     P3M0 |= 0x02; 
     P3M1 &= ~0x02; 
+    P31 = 0;
 #endif
 
     P5M0 |= 0x10; 
     P5M1 &= ~0x10; 
+    P54 = 0;
 }
 
 void hal_led_set_io(LedIo_t *io, u8 level)
