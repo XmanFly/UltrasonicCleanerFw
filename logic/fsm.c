@@ -214,28 +214,25 @@ void fsm_loop(void)
     switch(st)
     {
     case OFF:
-        if(tev == TOUCH_EVT_PRESS_500) {
-            print("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
-            if(!hal_battery_is_chg()) {
-                power_on(); // 上电
-                print("fsm OFF: not in charge\r\n");
-                if(hal_battery_get_mv() > WORK_MV) {
-                    print("fsm OFF: mv ok\r\n");
-                    enter(WORK);
-                    break;
-                } else {
-                    print("fsm OFF: mv low %u\r\n", hal_battery_get_mv());
-                    enter(LOW);
-                    break;
-                }
-            } else {
-                print("fsm OFF: in charge\r\n");
-            }
-        }
-
+        // 插上适配器 进入充电
         if(hal_battery_is_chg()) {
             enter(CHARGE_VOL_STABLE);
             break;
+        }
+        // 适配器未连接 收到按键信号
+        if(tev == TOUCH_EVT_PRESS_500) {
+            print("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
+            power_on(); // 上电
+            print("fsm OFF: not in charge\r\n");
+            if(hal_battery_get_mv() > WORK_MV) {
+                print("fsm OFF: mv ok\r\n");
+                enter(WORK);
+                break;
+            } else {
+                print("fsm OFF: mv low %u\r\n", hal_battery_get_mv());
+                enter(LOW);
+                break;
+            }
         }
         break;
 
