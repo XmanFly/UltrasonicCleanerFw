@@ -56,6 +56,9 @@ void fwInit(QObject *parent, SimViewModel *simViewModel, WaveEmitter *waveEmitte
     led_set_callback(waveEmitter->onEmitIO);
     power_set_callback(simViewModel->onSetPower);
 
+    // 上电自锁特例
+    simViewModel->setPower(true);
+
     QTimer *loopTimer = new QTimer(parent);
     loopTimer->callOnTimeout([](){
         fsm_loop();

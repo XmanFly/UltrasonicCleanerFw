@@ -7,16 +7,18 @@
 #include "hal/ultrasonic.h"
 #include "STC8H.h"
 
+
 void main(void){    
+    EA = 0;
 #ifdef UART_ENABLE
     hal_uart_init();
 #endif
     hal_battery_init(); // 必须放在定时器0初始化前面，初始化延时用的定时器0
-    fsm_init();
     hal_time_init();
+    fsm_init(); // 主状态机放到定时器后面启动
     hal_us_init();
 	
-    EA=1;
+    EA = 1;
 
 	while(1) {
         // P11 = 1;

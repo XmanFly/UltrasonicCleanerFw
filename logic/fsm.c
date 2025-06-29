@@ -20,28 +20,43 @@
 #define CLEAN_MS 180000u // 清洗时间
 #define CLEAN_LOW_WARN 3000u // 电压过低状态持续时间
 #define CHARGE_VOL_STABLE_TIME 1000u // 插上适配器后电压稳定时间
+#define AD_DELAY_TIME 2000u // 延迟300ms 因为AD电压稳定需要800ms，而此处延时300ms，加上用户按钮检测需要500ms，足矣
 
 typedef enum {
-    OFF, // 关机
-    WORK, // 清洗
-    FINISH, // 工作完成
-    CHARGE_VOL_STABLE, // 充电等待电压稳定
-    CHARGE_INIT, // 充电初始化
-    CHARGE_LOW, // 低电量充电
-    CHARGE_MID, // 中等电量充电
-    CHARGE_FULL, // 充满
-    LOW,			// 启动时 电量过低 红灯快闪
-    ABN // 异常
+    INIT, // 初始化 0
+    IDLE, // 空闲 1
+    AD_DELAY, // AD检测延时 2
+    WORK, // 清洗 3
+    FINISH, // 工作完成 4
+    OFF, // 关机 5
+    CHARGE_VOL_STABLE, // 充电等待电压稳定 6
+    CHARGE_INIT, // 充电初始化 7
+    CHARGE_LOW, // 低电量充电 8
+    CHARGE_MID, // 中等电量充电 9
+    CHARGE_FULL, // 充满 10
+    LOW, // 启动时 电量过低 红灯快闪 11
+    ABN // 异常 12
 } st_t;
 
-static st_t  st = OFF;
-static int   t_clean = -1;
-static int   t_tmp   = -1;
+static volatile st_t  st = INIT;
+static volatile int   t_clean = -1;
+static volatile int   t_tmp   = -1;
 
 /* forward */
 static void enter(st_t s);
 static void exit(st_t cur);
 static void clean_done(void) { enter(FINISH); }
+static void ad_delay_done(void) 
+{
+    if(hal_battery_get_mv() > WORK_MV) {
+        print("fsm OFF: mv ok\r\n");
+        enter(WORK);
+    } else {
+        print("fsm OFF: mv low %u\r\n", hal_battery_get_mv());
+        enter(LOW);
+    }
+}
+static void to_idle(void)     { enter(IDLE);   }
 static void to_off(void)     { enter(OFF);   }
 static void to_charge_init(void)     { enter(CHARGE_INIT);   }
 
@@ -63,6 +78,8 @@ void fsm_init(void)
 
     led_sm_off(LED_CH_RED);
     led_sm_off(LED_CH_BLUE);
+
+    enter(INIT);
 }
 
 /* -------- state transition helper -------- */
@@ -83,21 +100,33 @@ static void enter(st_t s)
 
     switch(s)
     {
-    case OFF:
-       led_sm_off(LED_CH_RED);
-       led_sm_off(LED_CH_BLUE);
-       power_off(); // 断电
-#if 0
-    //    led_sm_const(LED_CH_RED, 2);
-//       led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
-    //  led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
-#endif
+    case INIT:
+        power_on(); // 上电
+        t_tmp = timer_start(1, to_idle, 0);
+        break;
+
+    case IDLE:
+        break;
+
+    case AD_DELAY:
+        t_tmp = timer_start(AD_DELAY_TIME, ad_delay_done, 0);
         break;
 
     case WORK:
         hal_us_start();
         led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
         t_clean = timer_start(CLEAN_MS, clean_done, 0);
+        break;
+
+    case FINISH:
+        t_tmp = timer_start(1000, to_off, 0);
+        break;
+
+    case OFF:
+        led_sm_off(LED_CH_RED);
+        led_sm_off(LED_CH_BLUE);
+        power_off(); // 断电
+        t_tmp = timer_start(10, to_idle, 0);
         break;
 
     case CHARGE_VOL_STABLE:
@@ -124,10 +153,6 @@ static void enter(st_t s)
         t_tmp = timer_start(CLEAN_LOW_WARN, to_off, 0);
         break;
 
-    case FINISH:
-        t_tmp = timer_start(1000, to_off, 0);
-        break;
-
     case ABN:
         t_tmp = timer_start(3000, to_off, 0);
         break;
@@ -147,7 +172,16 @@ static void exit(st_t cur)
 #endif
     switch(cur)
     {
-    case OFF:
+    case INIT:
+        if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
+        break;
+
+    case IDLE:
+        break;
+
+    case AD_DELAY:
+        if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
+        break;        
 
     case WORK:
         /* stop ultrasonic generator */
@@ -157,6 +191,15 @@ static void exit(st_t cur)
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
+        break;
+
+    case FINISH:
+        /* no special hardware to release; timer already handled */
+        if(t_tmp   >= 0) { timer_stop(t_tmp);   t_tmp   = -1; }
+        break;
+
+    case OFF:
+        if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
     case CHARGE_VOL_STABLE:
@@ -181,11 +224,6 @@ static void exit(st_t cur)
     case LOW:
         led_sm_off(LED_CH_RED);
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
-        break;
-
-    case FINISH:
-        /* no special hardware to release; timer already handled */
-        if(t_tmp   >= 0) { timer_stop(t_tmp);   t_tmp   = -1; }
         break;
 
     case ABN:
@@ -213,7 +251,10 @@ void fsm_loop(void)
 
     switch(st)
     {
-    case OFF:
+    case INIT:
+        break;
+
+    case IDLE:
         // 插上适配器 进入充电
         if(hal_battery_is_chg()) {
             enter(CHARGE_VOL_STABLE);
@@ -221,18 +262,16 @@ void fsm_loop(void)
         }
         // 适配器未连接 收到按键信号
         if(tev == TOUCH_EVT_PRESS_500) {
-            print("fsm OFF: TOUCH_EVT_PRESS_500\r\n");
-            power_on(); // 上电
-            print("fsm OFF: not in charge\r\n");
-            if(hal_battery_get_mv() > WORK_MV) {
-                print("fsm OFF: mv ok\r\n");
-                enter(WORK);
-                break;
-            } else {
-                print("fsm OFF: mv low %u\r\n", hal_battery_get_mv());
-                enter(LOW);
-                break;
-            }
+            enter(AD_DELAY);
+            break;
+        }
+        break;
+
+    case AD_DELAY:
+        // 插上适配器 进入充电
+        if(hal_battery_is_chg()) {
+            enter(CHARGE_VOL_STABLE);
+            break;
         }
         break;
 
@@ -260,6 +299,9 @@ void fsm_loop(void)
         break;
 
     case FINISH:
+        break;
+
+    case OFF:
         break;
 
     case CHARGE_VOL_STABLE:

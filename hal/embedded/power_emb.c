@@ -5,7 +5,7 @@ void power_init()
 {
     P3M0 |= 0x80; 
 	P3M1 &= ~0x80; 
-	P37 = 0;
+	// P37 = 0;
 }
 	
 void power_on ()
