@@ -91,7 +91,15 @@ void hal_us_start(void)
 
 void hal_us_stop(void)
 {
+    /* 1) 先把占空比设 0（写 shadow） */
+    PWMA_CCR4H = 0;
+    PWMA_CCR4L = 0;
+
+    /* 2) 触发一次软件更新，让 CCR 立即生效 */
+    PWMA_EGR  = 0x01;       /* UG=1 */
+
     PWMA_CR1     &= ~0x01;  /* 关闭计数器 */
+    P33 = 0;
     us_running    = 0;
     print("hal_us_stop\n");
 }
