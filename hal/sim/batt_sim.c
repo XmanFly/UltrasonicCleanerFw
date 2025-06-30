@@ -33,4 +33,14 @@ void hal_battery_set_chg(u8 on)
 {
 
 }
+
+void hal_battery_set_port_input()
+{
+
+}
+
+void hal_battery_set_port_output()
+{
+
+}
 #endif
