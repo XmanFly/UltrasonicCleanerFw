@@ -12,8 +12,6 @@ static volatile u8  us_dirUp      = 1u;               /* 1=向上扫,0=向下扫
 static volatile u16 us_tickCnt    = 0u;               /* 滤波计数 */
 static volatile bit us_running    = 0;                /* 是否在扫频 */
 
-static volatile u16 arr;      /* 当前 ARR */
-static volatile u16 cmpVal;   /* 当前 CCR */
 
 /* ====== 查表常量 ====== */
 /* 表长度 = (MAX−MIN)/STEP + 1 = (158−138)/1 + 1 = 21 */
@@ -43,8 +41,8 @@ static void us_setFreq(u16 kHz)
     volatile u8 idx = (u8)(kHz - HAL_US_F_MIN_KHZ);
 
     /* 查表取出 ARR，再右移一次代替 50% 占空计算 */
-    volatile a = us_arr_tab[idx];
-    volatile c = a >> 1;  /* 50% 占空 */
+    volatile u16 a = us_arr_tab[idx];
+    volatile u16 c = a >> 1;  /* 50% 占空 */
 
     // EA = 0;  /* 关中断，按官方顺序先写 CCR 再写 ARR */
 
