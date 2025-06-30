@@ -49,7 +49,7 @@ static volatile int   t_tmp   = -1;
 /* forward */
 static void enter(st_t s);
 static void exit(st_t cur);
-static void clean_done(void) { enter(FINISH); }
+static void clean_done(void) { enter(WORK); }
 static void ad_delay_done(void) 
 {
     if(hal_battery_get_mv() > WORK_MV) {
