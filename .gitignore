@@ -5,7 +5,7 @@
 
 # —— 编译/链接产物 ——
 # Intel HEX、BIN 镜像
-*.hex
+# *.hex
 *.bin
 
 # 列表、映射文件
@@ -49,3 +49,4 @@ Thumbs.db
 
 # Qt
 *.user
+*.user.*
