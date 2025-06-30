@@ -24,6 +24,7 @@
 #define AD_DELAY_TIME 10u
 #define CHARGE_CTRL_ON_TIME 150u // 充电电压开时间
 #define CHARGE_CTRL_OFF_TIME 1850u // 充电电压关时间
+#define WORK_INTERVAL_TIME 180000u // 工作间隔
 
 
 typedef enum {
@@ -31,6 +32,7 @@ typedef enum {
     IDLE, // 空闲 1
     AD_DELAY, // AD检测延时 2
     WORK, // 清洗 3
+    WORK_INTERVAL, // 清洗间隔 3
     FINISH, // 工作完成 4
     OFF, // 关机 5
     CHARGE_CONFIRM, // 充电等待电压稳定 6
@@ -49,7 +51,6 @@ static volatile int   t_tmp   = -1;
 /* forward */
 static void enter(st_t s);
 static void exit(st_t cur);
-static void clean_done(void) { enter(WORK); }
 static void ad_delay_done(void) 
 {
     if(hal_battery_get_mv() > WORK_MV) {
@@ -68,6 +69,9 @@ static void charge_confirm_done(void)
         enter(OFF);
     }
 }
+
+static void to_work(void) { enter(WORK); }
+static void to_work_interval(void) { enter(WORK_INTERVAL); }
 static void to_idle(void)     { enter(IDLE);   }
 static void to_off(void)     { enter(OFF);   }
 static void to_charge_init(void)     { enter(CHARGE_INIT);   }
@@ -131,7 +135,11 @@ static void enter(st_t s)
     case WORK:
         hal_us_start();
         led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
-        t_clean = timer_start(CLEAN_MS, clean_done, 0);
+        t_clean = timer_start(CLEAN_MS, to_work_interval, 0);
+        break;
+
+    case WORK_INTERVAL:
+        t_tmp = timer_start(WORK_INTERVAL_TIME, to_work, 0);
         break;
 
     case FINISH:
@@ -213,6 +221,11 @@ static void exit(st_t cur)
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
+        break;
+
+    case WORK_INTERVAL:
+        /* cancel cleaning-finished timer if still active */
+        if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
 
     case FINISH:
@@ -318,6 +331,22 @@ void fsm_loop(void)
                 led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
                 // print("fsm_loop work bat high %lu\n", mv);
             }
+        }
+        break;
+
+    case WORK_INTERVAL:
+        if(hal_battery_is_chg()) {
+            enter(OFF);
+            break;
+        }
+        if(tev == TOUCH_EVT_PRESS_2S)
+        {
+            enter(FINISH);
+            print("fsm_loop work TOUCH_EVT_PRESS_2S\n");
+            break;
+        }
+        {
+            led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL * 3);
         }
         break;
 
