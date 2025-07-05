@@ -346,7 +346,8 @@ void fsm_loop(void)
             break;
         }
         {
-            led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL * 3);
+            led_sm_breathe(LED_CH_BLUE, 1);
+            led_sm_breathe(LED_CH_RED, 1);
         }
         break;
 

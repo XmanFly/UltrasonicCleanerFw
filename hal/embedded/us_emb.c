@@ -43,8 +43,8 @@ static void us_setFreq(u16 kHz)
     volatile u8 idx = (u8)(kHz - HAL_US_F_MIN_KHZ);
 
     /* 查表取出 ARR，再右移一次代替 50% 占空计算 */
-    volatile a = us_arr_tab[idx];
-    volatile c = a >> 1;  /* 50% 占空 */
+    volatile u16 a = us_arr_tab[idx];
+    volatile u16 c = a >> 1;  /* 50% 占空 */
 
     // EA = 0;  /* 关中断，按官方顺序先写 CCR 再写 ARR */
 
