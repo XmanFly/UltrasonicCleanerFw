@@ -224,6 +224,8 @@ static void exit(st_t cur)
         break;
 
     case WORK_INTERVAL:
+        led_sm_off(LED_CH_BLUE);
+        led_sm_off(LED_CH_RED);
         /* cancel cleaning-finished timer if still active */
         if(t_tmp >= 0) { timer_stop(t_tmp); t_tmp = -1; }
         break;
