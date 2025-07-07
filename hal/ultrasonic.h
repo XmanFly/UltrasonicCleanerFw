@@ -10,10 +10,10 @@ extern "C" {
 /* ---------- 配置宏 ---------- */
 #define HAL_US_FOSC_HZ          11059200UL   /* 晶振频率 Hz (11.0592 MHz) */
 #define HAL_US_FOSC_KHZ         11059U   /* 晶振频率 Hz (11.0592 MHz) */
-#define HAL_US_F_MIN_KHZ        138u         /* 扫频下限 kHz              */
-#define HAL_US_F_MAX_KHZ        158u         /* 扫频上限 kHz              */
-#define HAL_US_F_STEP_KHZ       1u           /* 每步增减 kHz              */
-#define HAL_US_HALF_SWEEP_MS    500u         /* 半程时间 ms (0.5 s)       */
+#define HAL_US_F_MIN_KHZ        120u         /* 扫频下限 kHz              */
+#define HAL_US_F_MAX_KHZ        140u         /* 扫频上限 kHz              */
+#define HAL_US_F_STEP_KHZ       2u           /* 每步增减 kHz              */
+#define HAL_US_HALF_SWEEP_MS    10u         /* 半程时间 ms (0.5 s)       */
 #define HAL_US_TICK_MS          1u           /* 系统 Tick 周期 ms         */
 /* ---------------------------- */
 

@@ -12,8 +12,6 @@ static volatile u8  us_dirUp      = 1u;               /* 1=向上扫,0=向下扫
 static volatile u16 us_tickCnt    = 0u;               /* 滤波计数 */
 static volatile bit us_running    = 0;                /* 是否在扫频 */
 
-static volatile u16 arr;      /* 当前 ARR */
-static volatile u16 cmpVal;   /* 当前 CCR */
 
 /* ====== 查表常量 ====== */
 /* 表长度 = (MAX−MIN)/STEP + 1 = (158−138)/1 + 1 = 21 */
@@ -21,12 +19,23 @@ static volatile u16 cmpVal;   /* 当前 CCR */
 
 /* 预先计算：ARR = floor(HAL_US_FOSC_KHZ / freq_kHz) − 1 */
 static const u16 us_arr_tab[US_LUT_SIZE] = {
-    /* 138→158 kHz */
-    /*138*/ 79, /*139*/ 78, /*140*/ 77, /*141*/ 77, /*142*/ 76,
-    /*143*/ 76, /*144*/ 75, /*145*/ 75, /*146*/ 74, /*147*/ 74,
-    /*148*/ 73, /*149*/ 73, /*150*/ 72, /*151*/ 72, /*152*/ 71,
-    /*153*/ 71, /*154*/ 70, /*155*/ 70, /*156*/ 69, /*157*/ 69,
-    /*158*/ 68
+    /*120*/ 91, /*122*/ 89, /*124*/ 88, /*126*/ 86, /*128*/ 85,
+    /*130*/ 84, /*132*/ 82, /*134*/ 81, /*136*/ 80, /*138*/ 79,
+    /*140*/ 78
+};
+/* 计算方式：CCR = (D/100) × (ARR+1) 四舍五入取整 */
+static const u16 us_duty_tab[US_LUT_SIZE] = {
+    0x0025,  // 120kHz: CCR = 37 (0x0025)
+    0x0022,  // 122kHz: CCR = 34 (0x0022)
+    0x0020,  // 124kHz: CCR = 32 (0x0020)
+    0x001E,  // 126kHz: CCR = 30 (0x001E)
+    0x001B,  // 128kHz: CCR = 27 (0x001B)
+    0x0019,  // 130kHz: CCR = 25 (0x0019)
+    0x0017,  // 132kHz: CCR = 23 (0x0017)
+    0x0015,  // 134kHz: CCR = 21 (0x0015)
+    0x0013,  // 136kHz: CCR = 19 (0x0013)
+    0x0012,  // 138kHz: CCR = 18 (0x0012)
+    0x0010   // 140kHz: CCR = 16 (0x0010)
 };
 
 /* ====== 计算常量 ====== */
@@ -40,16 +49,16 @@ static const u16 us_arr_tab[US_LUT_SIZE] = {
 static void us_setFreq(u16 kHz)
 {
     /* 计算在表中的索引，完全去掉除法 */
-    volatile u8 idx = (u8)(kHz - HAL_US_F_MIN_KHZ);
+    volatile u8 idx = (u8)(kHz - HAL_US_F_MIN_KHZ) >> 1;
 
     /* 查表取出 ARR，再右移一次代替 50% 占空计算 */
     volatile u16 a = us_arr_tab[idx];
-    volatile u16 c = a >> 1;  /* 50% 占空 */
+    volatile u16 duty = us_duty_tab[idx];  /* 高8位:CCR_H, 低8位:CCR_L */
 
     // EA = 0;  /* 关中断，按官方顺序先写 CCR 再写 ARR */
 
-    PWMA_CCR4H = (u8)(c >> 8);
-    PWMA_CCR4L = (u8)(c      );
+    PWMA_CCR4H = (u8)(duty >> 8);
+    PWMA_CCR4L = (u8)(duty     );
     PWMA_ARRH  = (u8)(a >> 8);
     PWMA_ARRL  = (u8)(a      );
     
