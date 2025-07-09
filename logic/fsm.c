@@ -371,10 +371,11 @@ void charge_handle()
         print("fsm_loop work CHARGE_INIT, enter CHARGE_FULL %u\n", hal_battery_get_mv());
     } else {
         // 根据当前电量 设置灯颜色
-        if(hal_battery_get_mv() < CHARG_MID_MV) {
-            led_sm_breathe(LED_CH_RED, BREATH_FAST);
-        } else {
-            led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
-        }
+        // if(hal_battery_get_mv() < CHARG_MID_MV) {
+        //     led_sm_breathe(LED_CH_RED, BREATH_FAST);
+        // } else {
+        //     led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
+        // }
+        led_sm_breathe(LED_CH_RED, BREATH_NORMAL);
     }
 }
