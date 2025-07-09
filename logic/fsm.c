@@ -95,6 +95,11 @@ void fsm_init(void)
     led_sm_off(LED_CH_RED);
     led_sm_off(LED_CH_BLUE);
 
+    // P3.5 按键下面这个灯
+    P3M0 |= 0x20; 
+    P3M1 &= ~0x20; 
+    P35 = 0;
+
     enter(INIT);
 }
 
@@ -131,6 +136,7 @@ static void enter(st_t s)
     case WORK:
         hal_us_start();
         led_sm_breathe(LED_CH_BLUE, BREATH_NORMAL);
+        P35 = 1;
         t_clean = timer_start(CLEAN_MS, clean_done, 0);
         break;
 
@@ -210,6 +216,8 @@ static void exit(st_t cur)
         hal_us_stop();
 
         led_sm_off(LED_CH_BLUE);
+
+        P35 = 0;
 
         /* cancel cleaning-finished timer if still active */
         if(t_clean >= 0) { timer_stop(t_clean); t_clean = -1; }
